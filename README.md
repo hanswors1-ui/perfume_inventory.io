@@ -5,6 +5,7 @@ A beautiful and intuitive web-based application for tracking your perfume collec
 ## ✨ Features
 
 - **📝 Easy Inventory Management**: Add, edit, and delete perfumes from your collection
+- **✨ Smart Autocomplete**: Auto-suggest from 40+ popular brands and 200+ popular perfumes including flankers and variations
 - **🏷️ Comprehensive Status Tracking**: Mark perfumes with multiple statuses
   - **Owned**: Perfumes in your collection
   - **Want to Get**: Perfumes on your wishlist to purchase
@@ -14,7 +15,7 @@ A beautiful and intuitive web-based application for tracking your perfume collec
 - **🔍 Smart Search**: Quickly find perfumes by name, brand, or batch code
 - **📊 Statistics Dashboard**: View total perfumes, brands, collection value, and detailed status breakdown at a glance
 - **📅 Production Date Tracking**: Record and track production dates for each perfume
-- **✅ Batch Code Verification**: Quick links to CheckFresh.com for batch code validation
+- **✅ Batch Code Verification**: Auto-copy batch codes and choose from multiple verification sites (ad-free options)
 - **💾 Data Persistence**: All data stored locally in your browser using LocalStorage
 - **📤 Export/Import**: Backup and restore your inventory as JSON files
 - **📊 CSV Export**: Export your collection to CSV for spreadsheet applications with status information
@@ -65,8 +66,8 @@ Visit the live application at: [https://hanswors1-ui.github.io/perfume_inventory
 ### Adding a Perfume
 
 1. Fill in the form with perfume details:
-   - **Perfume Name**: Name of the fragrance
-   - **Brand**: Manufacturer or brand name
+   - **Brand**: Start typing and select from popular brands or your previous entries (autocomplete enabled)
+   - **Perfume Name**: Start typing - suggestions will appear based on the selected brand and your inventory (autocomplete enabled)
    - **Production Date**: When the perfume was manufactured
    - **Batch Code**: The batch/lot code from the bottle
    - **Quantity**: Number of bottles you have (use 0 for wishlist items)
@@ -78,7 +79,7 @@ Visit the live application at: [https://hanswors1-ui.github.io/perfume_inventory
      - **Sold**: Perfumes that have been sold
    - **Notes**: Any additional information (optional)
 
-2. Click **"Check Date"** to verify the batch code on CheckFresh.com
+2. Click **"🔍 Verify"** to copy the batch code and choose from multiple verification sites
 3. Click **"Add Perfume"** to save to your inventory
 
 ### Managing Your Inventory
@@ -124,13 +125,15 @@ perfume_inventory.io/
 
 ## 💡 Tips
 
-1. **Batch Code Verification**: Use the "Check Date" feature to verify production dates on CheckFresh.com before adding perfumes
-2. **Wishlist Tracking**: Use "Want to Get" for perfumes you plan to buy and "Want to Try" for samples or testing
-3. **Quantity Field**: Set quantity to 0 for wishlist items ("Want to Get" or "Want to Try")
-4. **Regular Backups**: Export your inventory regularly to avoid data loss
-5. **Browser Data**: Your inventory is stored in your browser's LocalStorage. Clearing browser data will delete your inventory
-6. **Import/Export**: Use the backup feature to transfer your inventory between devices
-7. **Quick Status Changes**: Easily move perfumes from wishlist to owned when you acquire them
+1. **Autocomplete Feature**: Start typing brand or perfume names - the system suggests from 40+ popular brands, 200+ popular perfumes (including flankers and variations), and your own inventory. Use arrow keys to navigate, Enter to select
+2. **Batch Code Verification**: Click "🔍 Verify" to copy the batch code and choose from multiple verification sites (CheckCosmetic.net recommended for ad-free experience)
+3. **Wishlist Tracking**: Use "Want to Get" for perfumes you plan to buy and "Want to Try" for samples or testing
+3. **Consistent Data Entry**: Use autocomplete to ensure brand and perfume names are spelled consistently
+4. **Quantity Field**: Set quantity to 0 for wishlist items ("Want to Get" or "Want to Try")
+5. **Regular Backups**: Export your inventory regularly to avoid data loss
+6. **Browser Data**: Your inventory is stored in your browser's LocalStorage. Clearing browser data will delete your inventory
+7. **Import/Export**: Use the backup feature to transfer your inventory between devices
+8. **Quick Status Changes**: Easily move perfumes from wishlist to owned when you acquire them
 
 ## 🔒 Privacy & Data
 
@@ -166,11 +169,30 @@ Created by [@hanswors1-ui](https://github.com/hanswors1-ui)
 
 ## 🙏 Acknowledgments
 
-- Batch code verification powered by [CheckFresh.com](https://www.checkfresh.com/)
+- Batch code verification sites:
+  - [CheckCosmetic.net](https://www.checkcosmetic.net/) - Clean, ad-free interface
+  - [CheckFresh.com](https://www.checkfresh.com/) - Popular batch checker
+  - [Calculator.tf](https://www.calculator.tf/cosmetics-calculator/) - Simple tool
 - Icons: Unicode emoji characters
 - Design inspired by modern web design trends
 
 ## 🔄 Version History
+
+- **v1.3.0** (November 2025) - Smart Autocomplete Feature
+  - Added autocomplete for brand names (40+ popular brands included)
+  - Added comprehensive autocomplete for perfume names (200+ fragrances)
+  - Includes flankers and variations (EDT, EDP, Parfum, Intense versions)
+  - Covers luxury, designer, and niche brands (including Turkish/Middle Eastern)
+  - Brand-specific perfume suggestions prioritized
+  - Intelligent suggestions from existing inventory
+  - Keyboard navigation support (arrow keys and Enter)
+  - Ensures consistent data entry across inventory
+
+- **v1.2.1** (November 2025) - Batch Code Verification Improvement
+  - Improved batch code checker with modal popup
+  - Auto-copy batch code to clipboard
+  - Multiple verification site options (ad-free alternatives)
+  - Better user experience without popup ads
 
 - **v1.2.0** (November 2025) - Wishlist Feature Update
   - Added "Want to Get" status for purchase wishlist

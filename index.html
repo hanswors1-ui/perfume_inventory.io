@@ -17,13 +17,13 @@
             <h2>Add New Perfume</h2>
             <form id="perfumeForm">
                 <div class="form-group">
-                    <label for="perfumeName">Perfume Name:</label>
-                    <input type="text" id="perfumeName" required>
+                    <label for="brand">Brand:</label>
+                    <input type="text" id="brand" required placeholder="Start typing brand name..." autocomplete="off">
                 </div>
                 
                 <div class="form-group">
-                    <label for="brand">Brand:</label>
-                    <input type="text" id="brand" required>
+                    <label for="perfumeName">Perfume Name:</label>
+                    <input type="text" id="perfumeName" required placeholder="Start typing perfume name..." autocomplete="off">
                 </div>
                 
                 <div class="form-group">
@@ -36,10 +36,10 @@
                     <div style="display: flex; gap: 10px;">
                         <input type="text" id="batchCode" required placeholder="Enter batch code from perfume" style="flex: 1;">
                         <button type="button" id="checkBatchBtn" class="btn btn-secondary" style="padding: 10px 20px;">
-                            Check Date
+                            🔍 Verify
                         </button>
                     </div>
-                    <small style="color: #666; font-size: 0.9em;">💡 Click "Check Date" to verify production date on CheckFresh.com</small>
+                    <small style="color: #666; font-size: 0.9em;">💡 Click "Verify" to check batch code on multiple sites (copies code to clipboard)</small>
                 </div>
                 
                 <div class="form-group">
