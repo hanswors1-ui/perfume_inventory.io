@@ -49,6 +49,8 @@ const translations = {
         totalItems: "Total Items",
         brands: "Brands",
         totalUnits: "Total Units",
+        viewBottles: "🧴 Full Bottles",
+        viewDecants: "💧 Decants",
         // Table headers
         tableBrand: "Brand",
         tableName: "Name",
@@ -110,6 +112,8 @@ const translations = {
         totalItems: "Wszystkie Pozycje",
         brands: "Marki",
         totalUnits: "Wszystkie Jednostki",
+        viewBottles: "🧴 Pełne Butelki",
+        viewDecants: "💧 Odlewki",
         // Table headers
         tableBrand: "Marka",
         tableName: "Nazwa",
@@ -154,9 +158,12 @@ function updatePageLanguage() {
     localStorage.setItem('preferredLanguage', currentLanguage);
 }
 
+let currentView = localStorage.getItem('currentView') || 'bottles';
+
 class PerfumeInventory {
     constructor() {
-        this.perfumes = this.loadFromLocalStorage();
+        this.perfumes = this.loadFromLocalStorage('perfumes');
+        this.decants = this.loadFromLocalStorage('decants');
         this.knownBrands = this.getKnownBrands();
         this.knownPerfumes = this.getKnownPerfumes();
         this.allKnownPerfumeNames = this.getAllKnownPerfumeNames();
@@ -167,9 +174,13 @@ class PerfumeInventory {
         this.setupEventListeners();
         this.setupAutocomplete();
         this.setupLanguageSwitcher();
-        this.renderInventory();
-        this.updateStats();
+        this.setupViewSwitcher();
+        this.switchView(currentView);
         updatePageLanguage();
+    }
+
+    getCurrentList() {
+        return currentView === 'bottles' ? this.perfumes : this.decants;
     }
 
     getKnownBrands() {
@@ -185,17 +196,18 @@ class PerfumeInventory {
             'Penhaligon\'s', 'Roja Parfums', 'Xerjoff', 'Nishane', 'Mancera', 'Montale'
         ];
         
-        // Add brands from existing inventory
-        const inventoryBrands = [...new Set(this.perfumes.map(p => p.brand))];
+        // Add brands from both bottles and decants
+        const bottleBrands = [...new Set(this.perfumes.map(p => p.brand))];
+        const decantBrands = [...new Set(this.decants.map(p => p.brand))];
         
         // Combine and sort
-        return [...new Set([...popularBrands, ...inventoryBrands])].sort();
+        return [...new Set([...popularBrands, ...bottleBrands, ...decantBrands])].sort();
     }
 
     getKnownPerfumes() {
-        // Get perfume names from existing inventory grouped by brand
+        // Get perfume names from both lists grouped by brand
         const perfumesByBrand = {};
-        this.perfumes.forEach(p => {
+        [...this.perfumes, ...this.decants].forEach(p => {
             if (!perfumesByBrand[p.brand]) {
                 perfumesByBrand[p.brand] = [];
             }
@@ -407,11 +419,12 @@ class PerfumeInventory {
             'Shalimar', 'Mitsouko', 'L\'Heure Bleue', 'Jicky'
         ];
         
-        // Get all unique perfume names from inventory
-        const inventoryPerfumes = [...new Set(this.perfumes.map(p => p.name))];
+        // Get all unique perfume names from both lists
+        const bottlePerfumes = [...new Set(this.perfumes.map(p => p.name))];
+        const decantPerfumes = [...new Set(this.decants.map(p => p.name))];
         
         // Combine and sort
-        return [...new Set([...popularPerfumes, ...inventoryPerfumes])].sort();
+        return [...new Set([...popularPerfumes, ...bottlePerfumes, ...decantPerfumes])].sort();
     }
 
     setupAutocomplete() {
@@ -696,6 +709,48 @@ class PerfumeInventory {
         });
     }
 
+    setupViewSwitcher() {
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const view = btn.getAttribute('data-view');
+                this.switchView(view);
+            });
+        });
+    }
+
+    switchView(view) {
+        currentView = view;
+        localStorage.setItem('currentView', view);
+        
+        // Update active button
+        document.querySelectorAll('.view-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-view') === view);
+        });
+        
+        // Update form fields based on view
+        this.updateFormForView(view);
+        
+        this.renderInventory();
+        this.updateStats();
+    }
+
+    updateFormForView(view) {
+        const isDecants = view === 'decants';
+        
+        // Get the form groups for batch code and production date
+        const batchCodeGroup = document.getElementById('batchCode').closest('.form-group');
+        const productionDateGroup = document.getElementById('productionDate').closest('.form-group');
+        
+        // Hide/show based on view
+        if (isDecants) {
+            batchCodeGroup.style.display = 'none';
+            productionDateGroup.style.display = 'none';
+        } else {
+            batchCodeGroup.style.display = 'block';
+            productionDateGroup.style.display = 'block';
+        }
+    }
+
     addPerfume() {
         const status = document.getElementById('status').value;
         const quantityValue = document.getElementById('quantity').value;
@@ -716,7 +771,12 @@ class PerfumeInventory {
             addedDate: new Date().toISOString()
         };
 
-        this.perfumes.push(perfume);
+        // Add to current list (bottles or decants)
+        if (currentView === 'bottles') {
+            this.perfumes.push(perfume);
+        } else {
+            this.decants.push(perfume);
+        }
         this.saveToLocalStorage();
         
         // Update known brands and perfumes for autocomplete
@@ -727,11 +787,13 @@ class PerfumeInventory {
         this.renderInventory();
         this.updateStats();
         this.resetForm();
-        this.showToast('Perfume added successfully!');
+        const itemType = currentView === 'bottles' ? 'bottle' : 'decant';
+        this.showToast(`${itemType.charAt(0).toUpperCase() + itemType.slice(1)} added successfully!`);
     }
 
     updateStatus(id, newStatus) {
-        const perfume = this.perfumes.find(p => p.id === id);
+        const currentList = this.getCurrentList();
+        const perfume = currentList.find(p => p.id === id);
         if (perfume) {
             perfume.status = newStatus;
             this.saveToLocalStorage();
@@ -742,7 +804,8 @@ class PerfumeInventory {
     }
 
     editQuantity(id, cell) {
-        const perfume = this.perfumes.find(p => p.id === id);
+        const currentList = this.getCurrentList();
+        const perfume = currentList.find(p => p.id === id);
         if (!perfume) return;
 
         const currentValue = perfume.quantity || 0;
@@ -780,7 +843,8 @@ class PerfumeInventory {
     }
 
     editSize(id, cell) {
-        const perfume = this.perfumes.find(p => p.id === id);
+        const currentList = this.getCurrentList();
+        const perfume = currentList.find(p => p.id === id);
         if (!perfume) return;
 
         const currentValue = perfume.size || 0;
@@ -819,7 +883,8 @@ class PerfumeInventory {
     }
 
     editConcentration(id, cell) {
-        const perfume = this.perfumes.find(p => p.id === id);
+        const currentList = this.getCurrentList();
+        const perfume = currentList.find(p => p.id === id);
         if (!perfume) return;
 
         const currentValue = perfume.concentration || 'edp';
@@ -853,14 +918,23 @@ class PerfumeInventory {
         cell.appendChild(select);
         select.focus();
 
-        // Save on change or blur
+        // Save only when value actually changes (not on initial focus/open)
+        let hasChanged = false;
         const saveEdit = () => {
-            perfume.concentration = select.value;
-            this.saveToLocalStorage();
-            this.renderInventory();
+            if (select.value !== currentValue || hasChanged) {
+                perfume.concentration = select.value;
+                this.saveToLocalStorage();
+                this.renderInventory();
+            } else {
+                // Value didn't change, just re-render to restore the original display
+                this.renderInventory();
+            }
         };
 
-        select.addEventListener('change', saveEdit);
+        select.addEventListener('change', () => {
+            hasChanged = true;
+        });
+        
         select.addEventListener('blur', saveEdit);
     }
 
@@ -902,8 +976,12 @@ class PerfumeInventory {
     }
 
     deletePerfume(id) {
-        if (confirm('Are you sure you want to delete this perfume from inventory?')) {
-            this.perfumes = this.perfumes.filter(p => p.id !== id);
+        if (confirm('Are you sure you want to delete this item from inventory?')) {
+            if (currentView === 'bottles') {
+                this.perfumes = this.perfumes.filter(p => p.id !== id);
+            } else {
+                this.decants = this.decants.filter(p => p.id !== id);
+            }
             this.saveToLocalStorage();
             
             // Update autocomplete lists after deletion
@@ -913,15 +991,20 @@ class PerfumeInventory {
             
             this.renderInventory();
             this.updateStats();
-            this.showToast('Perfume deleted successfully!');
+            this.showToast('Item deleted successfully!');
         }
     }
 
-    renderInventory(perfumesToRender = this.perfumes) {
+    renderInventory(perfumesToRender = null) {
+        if (!perfumesToRender) {
+            perfumesToRender = this.getCurrentList();
+        }
+        
         const container = document.getElementById('inventoryTable');
         
         if (perfumesToRender.length === 0) {
-            container.innerHTML = '<div class="no-data">No perfumes in inventory. Add your first perfume above!</div>';
+            const itemType = currentView === 'bottles' ? 'bottles' : 'decants';
+            container.innerHTML = `<div class="no-data">No ${itemType} in inventory. Add your first ${itemType.slice(0, -1)} above!</div>`;
             return;
         }
 
@@ -1003,7 +1086,8 @@ class PerfumeInventory {
     }
 
     searchInventory(query) {
-        const filtered = this.perfumes.filter(perfume => {
+        const currentList = this.getCurrentList();
+        const filtered = currentList.filter(perfume => {
             const searchTerm = query.toLowerCase();
             return (
                 perfume.name.toLowerCase().includes(searchTerm) ||
@@ -1016,15 +1100,17 @@ class PerfumeInventory {
     }
 
     updateStats() {
+        const currentList = this.getCurrentList();
+        
         // Total items
-        document.getElementById('totalItems').textContent = this.perfumes.length;
+        document.getElementById('totalItems').textContent = currentList.length;
 
         // Total brands
-        const uniqueBrands = new Set(this.perfumes.map(p => p.brand));
+        const uniqueBrands = new Set(currentList.map(p => p.brand));
         document.getElementById('totalBrands').textContent = uniqueBrands.size;
 
         // Total quantity (exclude wishlist items: want-to-get and want-to-try)
-        const totalQuantity = this.perfumes
+        const totalQuantity = currentList
             .filter(p => {
                 const status = p.status || 'owned';
                 return status !== 'want-to-get' && status !== 'want-to-try';
@@ -1033,7 +1119,7 @@ class PerfumeInventory {
         document.getElementById('totalQuantity').textContent = totalQuantity;
 
         // Status counts
-        const statusCounts = this.perfumes.reduce((acc, p) => {
+        const statusCounts = currentList.reduce((acc, p) => {
             const status = p.status || 'owned';
             acc[status] = (acc[status] || 0) + 1;
             return acc;
@@ -1391,13 +1477,20 @@ class PerfumeInventory {
         localStorage.setItem('perfumeInventory', JSON.stringify(this.perfumes));
     }
 
-    loadFromLocalStorage() {
-        const data = localStorage.getItem('perfumeInventory');
+    loadFromLocalStorage(type) {
+        const key = type === 'decants' ? 'perfumeDecants' : 'perfumeInventory';
+        const data = localStorage.getItem(key);
         return data ? JSON.parse(data) : [];
     }
 
+    saveToLocalStorage() {
+        localStorage.setItem('perfumeInventory', JSON.stringify(this.perfumes));
+        localStorage.setItem('perfumeDecants', JSON.stringify(this.decants));
+    }
+
     exportToCSV() {
-        if (this.perfumes.length === 0) {
+        const currentList = this.getCurrentList();
+        if (currentList.length === 0) {
             alert('No data to export!');
             return;
         }
@@ -1405,7 +1498,7 @@ class PerfumeInventory {
         const headers = ['Perfume Name', 'Brand', 'Concentration', 'Batch Code', 'Production Date', 'Quantity', 'Size (ml)', 'Status', 'Fragrance Notes', 'Personal Notes', 'Added Date'];
         const csvContent = [
             headers.join(','),
-            ...this.perfumes.map(p => [
+            ...currentList.map(p => [
                 `"${p.name}"`,
                 `"${p.brand}"`,
                 `"${this.getConcentrationLabel(p.concentration || 'edp')}"`,
@@ -1436,15 +1529,16 @@ class PerfumeInventory {
     }
 
     backupInventory() {
-        if (this.perfumes.length === 0) {
+        if (this.perfumes.length === 0 && this.decants.length === 0) {
             alert('No data to backup!');
             return;
         }
 
         const backup = {
-            version: '1.0',
+            version: '2.0',
             exportDate: new Date().toISOString(),
-            perfumes: this.perfumes
+            perfumes: this.perfumes,
+            decants: this.decants
         };
 
         const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
@@ -1474,8 +1568,13 @@ class PerfumeInventory {
                     throw new Error('Invalid backup file format');
                 }
 
-                if (confirm(`This will restore ${backup.perfumes.length} perfume(s) from ${new Date(backup.exportDate).toLocaleDateString()}. Current inventory will be replaced. Continue?`)) {
+                // Handle both old (v1.0) and new (v2.0) backup formats
+                const decants = backup.decants && Array.isArray(backup.decants) ? backup.decants : [];
+                const totalItems = backup.perfumes.length + decants.length;
+
+                if (confirm(`This will restore ${backup.perfumes.length} bottle(s) and ${decants.length} decant(s) from ${new Date(backup.exportDate).toLocaleDateString()}. Current inventory will be replaced. Continue?`)) {
                     this.perfumes = backup.perfumes;
+                    this.decants = decants;
                     this.saveToLocalStorage();
                     
                     // Update autocomplete lists after restore

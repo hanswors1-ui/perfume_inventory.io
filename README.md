@@ -5,21 +5,28 @@ A beautiful and intuitive web-based application for tracking your perfume collec
 ## ✨ Features
 
 - **📝 Easy Inventory Management**: Add, edit, and delete perfumes from your collection
+- **💧 Dual Inventory System**: Separate management for full bottles and decants/samples
+  - **🧴 Full Bottles**: Complete tracking with batch codes and production dates
+  - **💧 Decants**: Simplified tracking for samples (no batch code/production date needed)
+  - **🔄 Easy Switching**: Toggle between views with one click
+  - **📊 Independent Statistics**: Separate stats for bottles and decants
+  - **💾 Dual Storage**: Each inventory stored separately in LocalStorage
 - **🌍 Multi-Language Support**: Switch between English and Polish with one click
 - **✨ Smart Autocomplete**: Auto-suggest from 40+ popular brands and 350+ popular perfumes including all flankers and variations
+- **✏️ Inline Editing**: Click to edit concentration, quantity, and size directly in the table
 - **🏷️ Comprehensive Status Tracking**: Mark perfumes with multiple statuses
   - **Owned**: Perfumes in your collection
   - **Want to Get**: Perfumes on your wishlist to purchase
   - **Want to Try**: Perfumes you'd like to sample or test
   - **For Sale**: Perfumes you're selling
   - **Sold**: Perfumes that have been sold
-- **🔍 Smart Search**: Quickly find perfumes by name, brand, or batch code
+- **🔍 Smart Search**: Quickly find perfumes by name, brand, or batch code within active view
 - **📊 Statistics Dashboard**: View total perfumes, brands, collection value, and detailed status breakdown at a glance
-- **📅 Production Date Tracking**: Record and track production dates for each perfume
-- **✅ Smart Batch Code Decoder**: Automatically decodes batch codes and populates production date (supports 6+ common formats)
+- **📅 Production Date Tracking**: Record and track production dates for full bottles
+- **✅ Smart Batch Code Decoder**: Automatically decodes batch codes and populates production date (supports 8+ common formats)
 - **💾 Data Persistence**: All data stored locally in your browser using LocalStorage
-- **📤 Export/Import**: Backup and restore your inventory as JSON files
-- **📊 CSV Export**: Export your collection to CSV for spreadsheet applications with status information
+- **📤 Export/Import**: Backup and restore your complete inventory (both bottles and decants) as JSON files
+- **📊 CSV Export**: Export current view (bottles or decants) to CSV for spreadsheet applications
 - **📱 Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices
 - **🎨 Modern UI**: Beautiful gradient design with smooth animations and color-coded status indicators
 
@@ -64,44 +71,64 @@ Visit the live application at: [https://hanswors1-ui.github.io/perfume_inventory
 
 ## 📖 How to Use
 
-### Adding a Perfume
+### Switching Between Bottles and Decants
 
-1. Fill in the form with perfume details:
+- Use the view switcher buttons at the top:
+  - **🧴 Full Bottles**: View and manage your complete perfume bottles
+  - **💧 Decants**: View and manage your samples and decants
+- Your view preference is automatically saved
+- Each view has independent statistics, search, and export
+
+### Adding a Perfume or Decant
+
+1. Select your view: **Full Bottles** or **Decants**
+
+2. Fill in the form with perfume details:
    - **Brand**: Start typing and select from popular brands or your previous entries (autocomplete enabled)
    - **Perfume Name**: Start typing - suggestions will appear based on the selected brand and your inventory (autocomplete enabled)
-   - **Production Date**: When the perfume was manufactured
-   - **Batch Code**: The batch/lot code from the bottle
-   - **Quantity**: Number of bottles you have (use 0 for wishlist items)
+   - **Concentration**: Choose from 9 types (EDP, EDT, Parfum, EDC, EDL, Intense, Elixir, Absolu, Other) - Click to edit later!
+   - **Production Date** (Full Bottles only): When the perfume was manufactured (YYYY-MM format)
+   - **Batch Code** (Full Bottles only): The batch/lot code from the bottle
+   - **Quantity**: Number of bottles/decants you have (use 0 for wishlist items)
+   - **Size**: Bottle/decant size in ml (click to edit later!)
    - **Status**: Choose from five options:
      - **Owned**: Perfumes you currently own
      - **Want to Get**: Perfumes you plan to purchase
      - **Want to Try**: Perfumes you'd like to sample
      - **For Sale**: Perfumes you're selling
      - **Sold**: Perfumes that have been sold
-   - **Notes**: Any additional information (optional)
+   - **Fragrance Notes**: Top, middle, and base notes (optional)
+   - **Personal Notes**: Any additional information (optional)
 
-2. Click **"🔍 Decode"** to automatically decode the batch code and fill production date
-3. Click **"Add Perfume"** to save to your inventory
+3. **For Full Bottles**: Click **"🔍 Decode"** to automatically decode the batch code and fill production date
+4. Click **"Add Perfume"** to save to your current inventory (bottles or decants)
 
 ### Managing Your Inventory
 
-- **Search**: Use the search bar to filter perfumes by name, brand, or batch code
+- **Switch Views**: Toggle between 🧴 Full Bottles and 💧 Decants using the view switcher
+- **Search**: Use the search bar to filter perfumes by name, brand, or batch code within the current view
+- **Inline Editing**: Click on concentration, quantity, or size values to edit them directly
+  - ✏️ Concentration: Click badge to select new type from dropdown
+  - ✏️ Quantity: Click number to edit, press Enter to save
+  - ✏️ Size: Click ml value to edit, press Enter to save
 - **Change Status**: Use the dropdown in each row to quickly update a perfume's status
   - 🔵 **Owned** (blue badge): Perfumes in your personal collection
   - 🟢 **Want to Get** (green badge): Perfumes on your wishlist to purchase
   - 🟣 **Want to Try** (purple badge): Perfumes you'd like to sample or test
   - 🟠 **For Sale** (orange badge): Perfumes you're selling
   - 🔴 **Sold** (red badge): Perfumes that have been sold (shown with strikethrough)
-- **Delete**: Click the "Delete" button to remove a perfume from inventory
+- **Delete**: Click the "Delete" button to remove a perfume from current inventory
 - **Visual Indicators**: Rows are color-coded based on status for easy identification
-- **Statistics**: Dashboard shows breakdown of perfumes by all five status categories
+- **Statistics**: Dashboard shows breakdown of perfumes in current view by all five status categories
 - **Wishlist Management**: Use "Want to Get" and "Want to Try" to track perfumes you're interested in
 
 ### Backup & Export
 
-- **Export to CSV**: Download your inventory as a spreadsheet-compatible CSV file
-- **Backup Data**: Save your complete inventory as a JSON file
+- **Export to CSV**: Download your current view (bottles or decants) as a spreadsheet-compatible CSV file
+- **Backup Data**: Save your complete inventory (both bottles AND decants) as a JSON file (v2.0 format)
 - **Restore Data**: Upload a previously saved JSON backup to restore your inventory
+  - Supports both v1.0 (bottles only) and v2.0 (bottles + decants) backup formats
+  - Shows count of bottles and decants being restored
 
 ## 🏗️ Project Structure
 
@@ -126,8 +153,10 @@ perfume_inventory.io/
 
 ## 💡 Tips
 
-1. **Autocomplete Feature**: Start typing brand or perfume names - the system suggests from 40+ popular brands, 350+ popular perfumes (including all flankers and variations), and your own inventory. Use arrow keys to navigate, Enter to select
-2. **Smart Batch Code Decoder**: Click "🔍 Decode" to automatically decode batch codes. Supports 8+ formats:
+1. **Bottles vs Decants**: Use **Full Bottles** for complete perfumes with batch codes, and **Decants** for samples where you don't need to track production info
+2. **Inline Editing**: Click directly on concentration badges, quantity, or size values to edit them - no need to delete and re-add!
+3. **Autocomplete Feature**: Start typing brand or perfume names - the system suggests from 40+ popular brands, 350+ popular perfumes (including all flankers and variations), and your own inventory. Use arrow keys to navigate, Enter to select
+4. **Smart Batch Code Decoder** (Full Bottles only): Click "🔍 Decode" to automatically decode batch codes. Supports 8+ formats:
    - 4-digit codes (YYMM)
    - 5-digit codes (YYDDD - day of year)
    - 6-digit codes (YYMMDD or DDMMYY)
@@ -135,13 +164,14 @@ perfume_inventory.io/
    - Cosmetic industry codes (letter-year codes)
    - Week-based codes
    - If auto-decode fails, copies code and provides manual check options with instructions
-3. **Wishlist Tracking**: Use "Want to Get" for perfumes you plan to buy and "Want to Try" for samples or testing
-3. **Consistent Data Entry**: Use autocomplete to ensure brand and perfume names are spelled consistently
-4. **Quantity Field**: Set quantity to 0 for wishlist items ("Want to Get" or "Want to Try")
-5. **Regular Backups**: Export your inventory regularly to avoid data loss
-6. **Browser Data**: Your inventory is stored in your browser's LocalStorage. Clearing browser data will delete your inventory
-7. **Import/Export**: Use the backup feature to transfer your inventory between devices
-8. **Quick Status Changes**: Easily move perfumes from wishlist to owned when you acquire them
+5. **Wishlist Tracking**: Use "Want to Get" for perfumes you plan to buy and "Want to Try" for samples or testing
+6. **Consistent Data Entry**: Use autocomplete to ensure brand and perfume names are spelled consistently
+7. **Quantity Field**: Set quantity to 0 for wishlist items ("Want to Get" or "Want to Try"), or leave empty for decants
+8. **Regular Backups**: Export your inventory regularly to avoid data loss (includes both bottles and decants)
+9. **Browser Data**: Your inventory is stored in your browser's LocalStorage. Clearing browser data will delete your inventory
+10. **Import/Export**: Use the backup feature to transfer your complete inventory between devices
+11. **Quick Status Changes**: Easily move perfumes from wishlist to owned when you acquire them
+12. **View-Specific Search**: Search only looks within the current view (bottles or decants)
 
 ## 🔒 Privacy & Data
 
@@ -184,6 +214,20 @@ Created by [@hanswors1-ui](https://github.com/hanswors1-ui)
 - Design inspired by modern web design trends
 
 ## 🔄 Version History
+
+- **v1.9.7** (November 2025) - Decants Management System
+  - Added complete dual inventory system for full bottles and decants
+  - View switcher (🧴 Full Bottles / 💧 Decants) with purple gradient styling
+  - Separate storage keys for bottles and decants in LocalStorage
+  - Independent statistics, search, and rendering for each view
+  - Batch code and production date fields hidden for decants (not needed for samples)
+  - Backup/restore supports both inventories (v2.0 format, backward compatible with v1.0)
+  - CSV export works per view (exports current list only)
+  - Smart autocomplete includes items from both inventories
+  - View preference saved and persisted
+  - Fixed inline concentration editing bug (dropdown no longer closes immediately)
+  - All CRUD operations (add, edit, delete, status change) work per view
+  - Mobile-responsive view switcher buttons
 
 - **v1.9.6** (November 2025) - Mobile Experience Improvements
   - Enhanced mobile responsive design for better usability on phones
