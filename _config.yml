@@ -1,0 +1,51 @@
+# Jekyll Configuration for GitHub Pages
+
+# Site settings
+title: Perfume Inventory Management System
+description: Track your perfume collection with batch codes and production dates
+author: hanswors1-ui
+email: your-email@example.com
+
+# Repository
+repository: hanswors1-ui/perfume_inventory.io
+github_username: hanswors1-ui
+
+# Build settings
+theme: null
+plugins: []
+
+# Exclude these files from the build
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - .git
+  - .gitignore
+
+# Include these files in the build
+include:
+  - _config.yml
+
+# Disable Jekyll processing for pure HTML/CSS/JS
+# Since this is a single-page application, we don't need Jekyll's processing
+# Comment out the line below if you want Jekyll to process the files
+# For a static site like this, it's better to bypass Jekyll entirely
+
+# Site URL (update this to your actual GitHub Pages URL)
+url: "https://hanswors1-ui.github.io"
+baseurl: "/perfume_inventory.io"
+
+# SEO and social
+lang: en
+timezone: UTC
+
+# Optional: Add Google Analytics
+# google_analytics: UA-XXXXXXXXX-X
+
+# Optional: Social links
+social:
+  github: hanswors1-ui
+  # twitter: your_twitter_handle
+  # linkedin: your_linkedin_username
