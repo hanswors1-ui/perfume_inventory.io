@@ -85,9 +85,13 @@ class PerfumeInventory {
             'Y', 'Y EDP', 'Y Le Parfum', 'Opium', 'Kouros',
             
             // Thierry Mugler
-            'Angel', 'Angel Muse', 'Angel Nova', 'Alien', 'Alien Essence Absolue',
-            'Alien Fusion', 'A*Men', 'Pure Havane', 'Pure Malt', 'Pure Tonka',
-            'Aura', 'Womanity', 'Cologne',
+            'Angel', 'Angel Muse', 'Angel Nova', 'Angel Fantasm', 'Angel Eau Croisiere',
+            'Angel Innocent', 'Angel Sunessence', 'Angel Liqueur de Parfum',
+            'Alien', 'Alien Essence Absolue', 'Alien Fusion', 'Alien Goddess',
+            'Alien Goddess Intense', 'Alien Flora Futura', 'Alien Eau Extraordinaire',
+            'A*Men', 'A*Men Pure Havane', 'A*Men Pure Malt', 'A*Men Pure Tonka',
+            'A*Men Kryptomint', 'A*Men Ultra Zest', 'Aura', 'Womanity', 'Cologne',
+            'Miroir Miroir', 'Over The Musk',
             
             // Viktor & Rolf
             'Flowerbomb', 'Flowerbomb Bloom', 'Flowerbomb Dew', 'Flowerbomb Midnight',
@@ -171,9 +175,80 @@ class PerfumeInventory {
             'Wood Sage & Sea Salt', 'English Pear & Freesia', 'Lime Basil & Mandarin',
             'Peony & Blush Suede', 'Myrrh & Tonka', 'Oud & Bergamot',
             
-            // Other Popular
-            'Portrait of a Lady', 'Ombre Nomade', 'Tuscan Leather', 'Interlude Man',
-            'Angels Share', 'Elysium', 'Orpheon', 'Royal Princess Oud'
+            // Amouage
+            'Interlude Man', 'Interlude Woman', 'Reflection Man', 'Reflection Woman',
+            'Jubilation XXV', 'Jubilation 25', 'Gold Man', 'Gold Woman',
+            'Memoir Man', 'Memoir Woman', 'Epic Man', 'Epic Woman',
+            
+            // Xerjoff
+            'Naxos', 'Alexandria II', 'Erba Pura', 'Accento', 'Comandante',
+            'Cruz del Sur II', 'Italica', 'Allende', 'Renaissance',
+            
+            // Roja Dove
+            'Elysium', 'Elysium Pour Homme Parfum Cologne', 'Enigma',
+            'Danger Pour Homme', 'Creation-E', 'Amber Aoud', 'Oceania',
+            
+            // Kilian
+            'Angels Share', 'Good Girl Gone Bad', 'Love Don\'t Be Shy',
+            'Black Phantom', 'Straight to Heaven', 'Moonlight in Heaven',
+            'Dark Lord', 'Rolling in Love', 'Intoxicated',
+            
+            // Initio
+            'Oud for Greatness', 'Psychedelic Love', 'Side Effect', 'Blessed Baraka',
+            'Absolute Aphrodisiac', 'Rehab', 'Magnetic Blend 7',
+            
+            // Penhaligon\'s
+            'Halfeti', 'The Tragedy of Lord George', 'Empressa', 'Juniper Sling',
+            'Blenheim Bouquet', 'Endymion', 'Portraits Collection',
+            
+            // Hermes
+            'Terre d\'Hermès', 'Terre d\'Hermès Eau Intense Vetiver', 'Terre d\'Hermès Parfum',
+            'Twilly d\'Hermès', 'H24', 'Voyage d\'Hermès', 'Eau des Merveilles',
+            
+            // Givenchy
+            'Gentleman', 'Gentleman Reserve Privee', 'Gentleman EDP', 'Gentleman Cologne',
+            'L\'Interdit', 'L\'Interdit Intense', 'Irresistible', 'Very Irresistible',
+            'Pi', 'Ysatis', 'Amarige',
+            
+            // Valentino
+            'Uomo Intense', 'Uomo Born in Roma', 'Donna Born in Roma',
+            'Voce Viva', 'Valentina', 'Valentino Noir Absolu',
+            
+            // Narciso Rodriguez
+            'For Her', 'For Her EDP', 'For Her Fleur Musc', 'For Him',
+            'Musc Noir', 'Poudree', 'Rouge', 'Cristal',
+            
+            // Marc Jacobs
+            'Daisy', 'Daisy Love', 'Daisy Eau So Fresh', 'Perfect',
+            'Decadence', 'Divine Decadence', 'Dot',
+            
+            // Estée Lauder
+            'Beautiful', 'Youth Dew', 'Pleasures', 'Knowing',
+            'Modern Muse', 'Bronze Goddess',
+            
+            // Jean Paul Gaultier
+            'Le Male', 'Le Male Le Parfum', 'Ultra Male', 'Scandal',
+            'Scandal Pour Homme', 'La Belle', 'Classique', 'Kokorico',
+            
+            // Atelier Cologne
+            'Orange Sanguine', 'Pacific Lime', 'Vanille Insensée',
+            'Oud Saphir', 'Silver Iris', 'Cedre Atlas',
+            
+            // Acqua di Parma
+            'Colonia', 'Colonia Essenza', 'Colonia Oud', 'Fico di Amalfi',
+            'Blu Mediterraneo', 'Quercia', 'Leather',
+            
+            // Nishane
+            'Ani', 'Hacivat', 'Hundred Silent Ways', 'Fan Your Flames',
+            'Wulong Cha', 'Sultan Vetiver', 'B-612',
+            
+            // Other Popular & Niche
+            'Portrait of a Lady', 'Ombre Nomade', 'Interlude Man', 'Royal Princess Oud',
+            'Orpheon', 'Jazz Club', 'Under the Lemon Trees', 'Beach Walk',
+            'At the Barbers', 'Tobacco Oud', 'Rose of No Man\'s Land',
+            'Matcha Meditation', 'Sel Marin', 'When the Rain Stops',
+            'Feve Delicieuse', 'Philosykos', 'Tam Dao', 'Do Son',
+            'Shalimar', 'Mitsouko', 'L\'Heure Bleue', 'Jicky'
         ];
         
         // Get all unique perfume names from inventory

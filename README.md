@@ -5,7 +5,7 @@ A beautiful and intuitive web-based application for tracking your perfume collec
 ## ✨ Features
 
 - **📝 Easy Inventory Management**: Add, edit, and delete perfumes from your collection
-- **✨ Smart Autocomplete**: Auto-suggest from 40+ popular brands and 200+ popular perfumes including flankers and variations
+- **✨ Smart Autocomplete**: Auto-suggest from 40+ popular brands and 350+ popular perfumes including all flankers and variations
 - **🏷️ Comprehensive Status Tracking**: Mark perfumes with multiple statuses
   - **Owned**: Perfumes in your collection
   - **Want to Get**: Perfumes on your wishlist to purchase
@@ -125,7 +125,7 @@ perfume_inventory.io/
 
 ## 💡 Tips
 
-1. **Autocomplete Feature**: Start typing brand or perfume names - the system suggests from 40+ popular brands, 200+ popular perfumes (including flankers and variations), and your own inventory. Use arrow keys to navigate, Enter to select
+1. **Autocomplete Feature**: Start typing brand or perfume names - the system suggests from 40+ popular brands, 350+ popular perfumes (including all flankers and variations), and your own inventory. Use arrow keys to navigate, Enter to select
 2. **Batch Code Verification**: Click "🔍 Verify" to copy the batch code and choose from multiple verification sites (CheckCosmetic.net recommended for ad-free experience)
 3. **Wishlist Tracking**: Use "Want to Get" for perfumes you plan to buy and "Want to Try" for samples or testing
 3. **Consistent Data Entry**: Use autocomplete to ensure brand and perfume names are spelled consistently
@@ -180,9 +180,12 @@ Created by [@hanswors1-ui](https://github.com/hanswors1-ui)
 
 - **v1.3.0** (November 2025) - Smart Autocomplete Feature
   - Added autocomplete for brand names (40+ popular brands included)
-  - Added comprehensive autocomplete for perfume names (200+ fragrances)
-  - Includes flankers and variations (EDT, EDP, Parfum, Intense versions)
-  - Covers luxury, designer, and niche brands (including Turkish/Middle Eastern)
+  - Added comprehensive autocomplete for perfume names (350+ fragrances)
+  - Complete Mugler collection (Angel Fantasm, Alien Goddess, etc.)
+  - Includes all flankers and variations (EDT, EDP, Parfum, Intense versions)
+  - Covers luxury, designer, and niche brands (Amouage, Xerjoff, Roja, Kilian, Initio)
+  - Classic and vintage fragrances (Shalimar, Mitsouko, L'Heure Bleue)
+  - Turkish/Middle Eastern and Nishane collection
   - Brand-specific perfume suggestions prioritized
   - Intelligent suggestions from existing inventory
   - Keyboard navigation support (arrow keys and Enter)
