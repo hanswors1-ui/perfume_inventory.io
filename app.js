@@ -644,6 +644,23 @@ class PerfumeInventory {
         document.getElementById('status').addEventListener('change', (e) => {
             this.updateFormFieldRequirements(e.target.value);
         });
+
+        // Format production date input for YYYY-MM
+        document.getElementById('productionDate').addEventListener('input', (e) => {
+            let value = e.target.value.replace(/[^\d-]/g, ''); // Only digits and dash
+            
+            // Auto-insert dash after year
+            if (value.length === 4 && !value.includes('-')) {
+                value = value + '-';
+            }
+            
+            // Limit to YYYY-MM format
+            if (value.length > 7) {
+                value = value.substring(0, 7);
+            }
+            
+            e.target.value = value;
+        });
     }
 
     updateFormFieldRequirements(status) {

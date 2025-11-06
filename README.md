@@ -185,6 +185,18 @@ Created by [@hanswors1-ui](https://github.com/hanswors1-ui)
 
 ## 🔄 Version History
 
+- **v1.9.6** (November 2025) - Mobile Experience Improvements
+  - Enhanced mobile responsive design for better usability on phones
+  - Fixed date input to stay as YYYY-MM text format (no calendar picker on mobile)
+  - Added auto-formatting for date input (auto-inserts dash after year)
+  - Improved input modes: numeric keyboard for numbers, decimal for size
+  - Horizontal scrolling for inventory table on small screens
+  - Optimized font sizes and spacing for mobile devices
+  - 2-column grid for statistics cards on mobile
+  - Full-width buttons and improved touch targets
+  - Better modal sizing on mobile screens
+  - Prevents iOS zoom on input focus (16px minimum font size)
+
 - **v1.9.5** (November 2025) - Inline Concentration Editing
   - Click concentration badge in inventory to edit type directly
   - Dropdown selector appears with all 9 concentration options
