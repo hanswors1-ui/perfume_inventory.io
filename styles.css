@@ -22,8 +22,19 @@ header {
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    text-align: center;
     margin-bottom: 30px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.header-content > div:first-child {
+    text-align: left;
+    flex: 1;
 }
 
 header h1 {
@@ -35,6 +46,35 @@ header h1 {
 .subtitle {
     color: #666;
     font-size: 1.1em;
+}
+
+.language-switcher {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.lang-btn {
+    padding: 10px 20px;
+    border: 2px solid #667eea;
+    background: white;
+    color: #667eea;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.lang-btn:hover {
+    background: #f0f0ff;
+    transform: translateY(-2px);
+}
+
+.lang-btn.active {
+    background: #667eea;
+    color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 .add-perfume-section {
@@ -176,6 +216,57 @@ header h1 {
     background: #da190b;
 }
 
+/* Editable cells */
+.editable-cell {
+    cursor: pointer;
+    position: relative;
+    transition: background-color 0.2s;
+}
+
+.editable-cell:hover {
+    background-color: #f0f0ff !important;
+}
+
+.editable-cell:hover::after {
+    content: '✏️';
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.8em;
+    opacity: 0.5;
+}
+
+.inline-edit-input {
+    padding: 5px;
+    border: 2px solid #667eea;
+    border-radius: 4px;
+    font-size: 1em;
+    text-align: center;
+    outline: none;
+}
+
+.inline-edit-input:focus {
+    border-color: #5568d3;
+    box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+}
+
+.inline-edit-select {
+    padding: 6px 10px;
+    border: 2px solid #667eea;
+    border-radius: 4px;
+    font-size: 0.9em;
+    outline: none;
+    background: white;
+    cursor: pointer;
+    min-width: 150px;
+}
+
+.inline-edit-select:focus {
+    border-color: #5568d3;
+    box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+}
+
 .inventory-section {
     background: white;
     padding: 30px;
@@ -288,6 +379,19 @@ tbody tr:hover {
 .production-date {
     font-size: 0.9em;
     color: #666;
+}
+
+/* Concentration Badge */
+.concentration-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: 600;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .no-data {
@@ -585,9 +689,43 @@ tr.status-sold .status-badge {
     }
 }
 
+/* Fragrance Notes Styling */
+.fragrance-notes-cell {
+    max-width: 250px;
+}
+
+.fragrance-notes {
+    display: block;
+    font-size: 0.9em;
+    color: #555;
+    line-height: 1.5;
+    padding: 8px;
+    background: #f8f9fa;
+    border-radius: 5px;
+    border-left: 3px solid #667eea;
+}
+
 @media (max-width: 768px) {
     header h1 {
         font-size: 1.8em;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .header-content > div:first-child {
+        text-align: center;
+    }
+    
+    .language-switcher {
+        justify-content: center;
+        width: 100%;
+    }
+    
+    .lang-btn {
+        flex: 1;
     }
     
     .inventory-header {

@@ -9,77 +9,124 @@
 <body>
     <div class="container">
         <header>
-            <h1>🌸 Perfume Inventory System</h1>
-            <p class="subtitle">Track your perfume collection with batch codes and production dates</p>
+            <div class="header-content">
+                <div>
+                    <h1 data-i18n="title">🌸 Perfume Inventory System</h1>
+                    <p class="subtitle" data-i18n="subtitle">Track your perfume collection with batch codes and production dates</p>
+                </div>
+                <div class="language-switcher">
+                    <button class="lang-btn active" data-lang="en">🇬🇧 EN</button>
+                    <button class="lang-btn" data-lang="pl">🇵🇱 PL</button>
+                </div>
+            </div>
         </header>
 
         <div class="add-perfume-section">
-            <h2>Add New Perfume</h2>
+            <h2 data-i18n="addNewPerfume">Add New Perfume</h2>
             <form id="perfumeForm">
                 <div class="form-group">
-                    <label for="brand">Brand:</label>
-                    <input type="text" id="brand" required placeholder="Start typing brand name..." autocomplete="off">
+                    <label for="brand" data-i18n="brand">Brand:</label>
+                    <input type="text" id="brand" required data-i18n-placeholder="brandPlaceholder" autocomplete="off">
                 </div>
                 
                 <div class="form-group">
-                    <label for="perfumeName">Perfume Name:</label>
-                    <input type="text" id="perfumeName" required placeholder="Start typing perfume name..." autocomplete="off">
+                    <label for="perfumeName" data-i18n="perfumeName">Perfume Name:</label>
+                    <input type="text" id="perfumeName" required data-i18n-placeholder="perfumeNamePlaceholder" autocomplete="off">
                 </div>
                 
                 <div class="form-group">
-                    <label for="productionDate">Production Date:</label>
-                    <input type="date" id="productionDate" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="batchCode">Batch Code:</label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" id="batchCode" required placeholder="Enter batch code from perfume" style="flex: 1;">
-                        <button type="button" id="checkBatchBtn" class="btn btn-secondary" style="padding: 10px 20px;">
-                            🔍 Verify
-                        </button>
-                    </div>
-                    <small style="color: #666; font-size: 0.9em;">💡 Click "Verify" to check batch code on multiple sites (copies code to clipboard)</small>
-                </div>
-                
-                <div class="form-group">
-                    <label for="quantity">Quantity:</label>
-                    <input type="number" id="quantity" min="0" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="size">Size (ml):</label>
-                    <input type="number" id="size" min="0" step="0.1" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="status">Status:</label>
-                    <select id="status">
-                        <option value="owned">Owned</option>
-                        <option value="want-to-get">Want to Get</option>
-                        <option value="want-to-try">Want to Try</option>
-                        <option value="for-sale">For Sale</option>
-                        <option value="sold">Sold</option>
+                    <label for="concentration" data-i18n="concentration">Concentration:</label>
+                    <select id="concentration">
+                        <option value="edp" data-i18n="concentrationEDP">Eau de Parfum (EDP)</option>
+                        <option value="edt" data-i18n="concentrationEDT">Eau de Toilette (EDT)</option>
+                        <option value="parfum" data-i18n="concentrationParfum">Parfum / Extrait</option>
+                        <option value="edc" data-i18n="concentrationEDC">Eau de Cologne (EDC)</option>
+                        <option value="edl" data-i18n="concentrationEDL">Eau de Légère</option>
+                        <option value="intense" data-i18n="concentrationIntense">Intense</option>
+                        <option value="elixir" data-i18n="concentrationElixir">Elixir</option>
+                        <option value="absolu" data-i18n="concentrationAbsolu">Absolu</option>
+                        <option value="other" data-i18n="concentrationOther">Other</option>
                     </select>
                 </div>
                 
                 <div class="form-group">
-                    <label for="notes">Notes (Optional):</label>
-                    <textarea id="notes" rows="3"></textarea>
+                    <label for="productionDate">
+                        <span data-i18n="productionDate">Production Date:</span>
+                        <span style="color: #999; font-size: 0.9em;" data-i18n="optionalYYYYMM">(optional, YYYY-MM format)</span>
+                    </label>
+                    <input type="text" id="productionDate" placeholder="YYYY-MM" pattern="\d{4}-(0[1-9]|1[0-2])">
+                </div>
+
+                <div class="form-group">
+                    <label for="batchCode">
+                        <span data-i18n="batchCode">Batch Code:</span>
+                        <span style="color: #999; font-size: 0.9em;" data-i18n="optional">(optional)</span>
+                    </label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="batchCode" data-i18n-placeholder="batchCodePlaceholder" style="flex: 1;">
+                        <button type="button" id="checkBatchBtn" class="btn btn-secondary" style="padding: 10px 20px;">
+                            <span data-i18n="decode">🔍 Decode</span>
+                        </button>
+                    </div>
+                    <small style="color: #666; font-size: 0.9em;" data-i18n="batchCodeHint">💡 Click "Decode" to auto-fill production date. Check if date seems correct. Leave empty if no batch code.</small>
                 </div>
                 
-                <button type="submit" class="btn btn-primary">Add to Inventory</button>
+                <div class="form-group">
+                    <label for="status" data-i18n="status">Status:</label>
+                    <select id="status">
+                        <option value="owned" data-i18n="statusOwned">Owned</option>
+                        <option value="want-to-get" data-i18n="statusWantToGet">Want to Get</option>
+                        <option value="want-to-try" data-i18n="statusWantToTry">Want to Try</option>
+                        <option value="for-sale" data-i18n="statusForSale">For Sale</option>
+                        <option value="sold" data-i18n="statusSold">Sold</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="quantityGroup">
+                    <label for="quantity">
+                        <span data-i18n="quantity">Quantity:</span>
+                        <span class="optional-label" style="color: #999; font-size: 0.9em; display: none;" data-i18n="optional">(optional)</span>
+                    </label>
+                    <input type="number" id="quantity" min="0" required>
+                </div>
+                
+                <div class="form-group" id="sizeGroup">
+                    <label for="size">
+                        <span data-i18n="size">Size (ml):</span>
+                        <span class="optional-label" style="color: #999; font-size: 0.9em; display: none;" data-i18n="optional">(optional)</span>
+                    </label>
+                    <input type="number" id="size" min="0" step="0.1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="fragranceNotes">
+                        <span data-i18n="fragranceNotes">Fragrance Notes</span>
+                        <span data-i18n="optional">(Optional):</span>
+                    </label>
+                    <textarea id="fragranceNotes" rows="2" data-i18n-placeholder="fragranceNotesPlaceholder"></textarea>
+                    <small style="color: #666; font-size: 0.9em;" data-i18n="fragranceNotesHint">💡 Add the perfume's notes (top, middle, base)</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="notes">
+                        <span data-i18n="personalNotes">Personal Notes</span>
+                        <span data-i18n="optional">(Optional):</span>
+                    </label>
+                    <textarea id="notes" rows="3" data-i18n-placeholder="personalNotesPlaceholder"></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" data-i18n="addToInventory">Add to Inventory</button>
             </form>
         </div>
 
         <div class="inventory-section">
             <div class="inventory-header">
-                <h2>Current Inventory</h2>
+                <h2 data-i18n="currentInventory">Current Inventory</h2>
                 <div class="search-filter">
-                    <input type="text" id="searchInput" placeholder="Search by name, brand, or batch code...">
-                    <button id="exportBtn" class="btn btn-secondary">Export to CSV</button>
-                    <button id="backupBtn" class="btn btn-backup">💾 Backup</button>
-                    <button id="restoreBtn" class="btn btn-restore">📁 Restore</button>
+                    <input type="text" id="searchInput" data-i18n-placeholder="searchPlaceholder">
+                    <button id="exportBtn" class="btn btn-secondary" data-i18n="exportToCSV">Export to CSV</button>
+                    <button id="backupBtn" class="btn btn-backup" data-i18n="backup">💾 Backup</button>
+                    <button id="restoreBtn" class="btn btn-restore" data-i18n="restore">📁 Restore</button>
                     <input type="file" id="restoreFile" accept=".json" style="display: none;">
                 </div>
             </div>
@@ -87,35 +134,35 @@
             <div class="stats">
                 <div class="stat-card">
                     <h3 id="totalItems">0</h3>
-                    <p>Total Items</p>
+                    <p data-i18n="totalItems">Total Items</p>
                 </div>
                 <div class="stat-card">
                     <h3 id="totalBrands">0</h3>
-                    <p>Brands</p>
+                    <p data-i18n="brands">Brands</p>
                 </div>
                 <div class="stat-card">
                     <h3 id="totalQuantity">0</h3>
-                    <p>Total Units</p>
+                    <p data-i18n="totalUnits">Total Units</p>
                 </div>
                 <div class="stat-card stat-owned">
                     <h3 id="ownedCount">0</h3>
-                    <p>Owned</p>
+                    <p data-i18n="statusOwned">Owned</p>
                 </div>
                 <div class="stat-card stat-want-to-get">
                     <h3 id="wantToGetCount">0</h3>
-                    <p>Want to Get</p>
+                    <p data-i18n="statusWantToGet">Want to Get</p>
                 </div>
                 <div class="stat-card stat-want-to-try">
                     <h3 id="wantToTryCount">0</h3>
-                    <p>Want to Try</p>
+                    <p data-i18n="statusWantToTry">Want to Try</p>
                 </div>
                 <div class="stat-card stat-for-sale">
                     <h3 id="forSaleCount">0</h3>
-                    <p>For Sale</p>
+                    <p data-i18n="statusForSale">For Sale</p>
                 </div>
                 <div class="stat-card stat-sold">
                     <h3 id="soldCount">0</h3>
-                    <p>Sold</p>
+                    <p data-i18n="statusSold">Sold</p>
                 </div>
             </div>
 

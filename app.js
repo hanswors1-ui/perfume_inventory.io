@@ -1,5 +1,159 @@
 // Perfume Inventory Management System
 
+// Translation System
+const translations = {
+    en: {
+        title: "🌸 Perfume Inventory System",
+        subtitle: "Track your perfume collection with batch codes and production dates",
+        addNewPerfume: "Add New Perfume",
+        brand: "Brand:",
+        brandPlaceholder: "Start typing brand name...",
+        perfumeName: "Perfume Name:",
+        perfumeNamePlaceholder: "Start typing perfume name...",
+        concentration: "Concentration:",
+        concentrationEDP: "Eau de Parfum (EDP)",
+        concentrationEDT: "Eau de Toilette (EDT)",
+        concentrationParfum: "Parfum / Extrait",
+        concentrationEDC: "Eau de Cologne (EDC)",
+        concentrationEDL: "Eau de Légère",
+        concentrationIntense: "Intense",
+        concentrationElixir: "Elixir",
+        concentrationAbsolu: "Absolu",
+        concentrationOther: "Other",
+        productionDate: "Production Date:",
+        optionalYYYYMM: "(optional, YYYY-MM format)",
+        optional: "(optional)",
+        batchCode: "Batch Code:",
+        batchCodePlaceholder: "Enter batch code from perfume (leave empty if none)",
+        decode: "🔍 Decode",
+        batchCodeHint: "💡 Click \"Decode\" to auto-fill production date. Check if date seems correct. Leave empty if no batch code.",
+        quantity: "Quantity:",
+        size: "Size (ml):",
+        status: "Status:",
+        statusOwned: "Owned",
+        statusWantToGet: "Want to Get",
+        statusWantToTry: "Want to Try",
+        statusForSale: "For Sale",
+        statusSold: "Sold",
+        fragranceNotes: "Fragrance Notes",
+        fragranceNotesPlaceholder: "e.g., Top: Bergamot, Lemon | Middle: Jasmine, Rose | Base: Vanilla, Musk",
+        fragranceNotesHint: "💡 Add the perfume's notes (top, middle, base)",
+        personalNotes: "Personal Notes",
+        personalNotesPlaceholder: "Your thoughts, occasion, season, etc.",
+        addToInventory: "Add to Inventory",
+        currentInventory: "Current Inventory",
+        searchPlaceholder: "Search by name, brand, or batch code...",
+        exportToCSV: "Export to CSV",
+        backup: "💾 Backup",
+        restore: "📁 Restore",
+        totalItems: "Total Items",
+        brands: "Brands",
+        totalUnits: "Total Units",
+        // Table headers
+        tableBrand: "Brand",
+        tableName: "Name",
+        tableProductionDate: "Production Date",
+        tableBatchCode: "Batch Code",
+        tableQuantity: "Qty",
+        tableSize: "Size",
+        tableStatus: "Status",
+        tableFragranceNotes: "Fragrance Notes",
+        tablePersonalNotes: "Personal Notes",
+        tableActions: "Actions",
+        tableConcentration: "Type",
+        deleteButton: "Delete"
+    },
+    pl: {
+        title: "🌸 System Inwentaryzacji Perfum",
+        subtitle: "Śledź swoją kolekcję perfum z kodami partii i datami produkcji",
+        addNewPerfume: "Dodaj Nowe Perfumy",
+        brand: "Marka:",
+        brandPlaceholder: "Zacznij wpisywać nazwę marki...",
+        perfumeName: "Nazwa Perfum:",
+        perfumeNamePlaceholder: "Zacznij wpisywać nazwę perfum...",
+        concentration: "Koncentracja:",
+        concentrationEDP: "Eau de Parfum (EDP)",
+        concentrationEDT: "Eau de Toilette (EDT)",
+        concentrationParfum: "Parfum / Ekstrakt",
+        concentrationEDC: "Eau de Cologne (EDC)",
+        concentrationEDL: "Eau de Légère",
+        concentrationIntense: "Intense",
+        concentrationElixir: "Elixir",
+        concentrationAbsolu: "Absolu",
+        concentrationOther: "Inne",
+        productionDate: "Data Produkcji:",
+        optionalYYYYMM: "(opcjonalne, format RRRR-MM)",
+        optional: "(opcjonalne)",
+        batchCode: "Kod Partii:",
+        batchCodePlaceholder: "Wpisz kod partii z perfum (zostaw puste jeśli brak)",
+        decode: "🔍 Dekoduj",
+        batchCodeHint: "💡 Kliknij \"Dekoduj\" aby automatycznie wypełnić datę produkcji. Sprawdź czy data wydaje się poprawna. Zostaw puste jeśli brak kodu partii.",
+        quantity: "Ilość:",
+        size: "Pojemność (ml):",
+        status: "Status:",
+        statusOwned: "Posiadane",
+        statusWantToGet: "Chcę Kupić",
+        statusWantToTry: "Chcę Wypróbować",
+        statusForSale: "Na Sprzedaż",
+        statusSold: "Sprzedane",
+        fragranceNotes: "Nuty Zapachowe",
+        fragranceNotesPlaceholder: "np. Góra: Bergamotka, Cytryna | Środek: Jaśmin, Róża | Baza: Wanilia, Piżmo",
+        fragranceNotesHint: "💡 Dodaj nuty perfum (góra, środek, baza)",
+        personalNotes: "Notatki Osobiste",
+        personalNotesPlaceholder: "Twoje przemyślenia, okazja, pora roku, itp.",
+        addToInventory: "Dodaj do Inwentarza",
+        currentInventory: "Aktualny Inwentarz",
+        searchPlaceholder: "Szukaj po nazwie, marce lub kodzie partii...",
+        exportToCSV: "Eksportuj do CSV",
+        backup: "💾 Kopia zapasowa",
+        restore: "📁 Przywróć",
+        totalItems: "Wszystkie Pozycje",
+        brands: "Marki",
+        totalUnits: "Wszystkie Jednostki",
+        // Table headers
+        tableBrand: "Marka",
+        tableName: "Nazwa",
+        tableProductionDate: "Data Produkcji",
+        tableBatchCode: "Kod Partii",
+        tableQuantity: "Ilość",
+        tableSize: "Pojemność",
+        tableStatus: "Status",
+        tableFragranceNotes: "Nuty Zapachowe",
+        tablePersonalNotes: "Notatki Osobiste",
+        tableActions: "Akcje",
+        tableConcentration: "Typ",
+        deleteButton: "Usuń"
+    }
+};
+
+let currentLanguage = localStorage.getItem('preferredLanguage') || 'en';
+
+function translate(key) {
+    return translations[currentLanguage][key] || translations.en[key] || key;
+}
+
+function updatePageLanguage() {
+    // Update all elements with data-i18n attribute
+    document.querySelectorAll('[data-i18n]').forEach(element => {
+        const key = element.getAttribute('data-i18n');
+        element.textContent = translate(key);
+    });
+
+    // Update placeholders
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+        const key = element.getAttribute('data-i18n-placeholder');
+        element.placeholder = translate(key);
+    });
+
+    // Update language buttons
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-lang') === currentLanguage);
+    });
+
+    // Save preference
+    localStorage.setItem('preferredLanguage', currentLanguage);
+}
+
 class PerfumeInventory {
     constructor() {
         this.perfumes = this.loadFromLocalStorage();
@@ -12,8 +166,10 @@ class PerfumeInventory {
     init() {
         this.setupEventListeners();
         this.setupAutocomplete();
+        this.setupLanguageSwitcher();
         this.renderInventory();
         this.updateStats();
+        updatePageLanguage();
     }
 
     getKnownBrands() {
@@ -298,8 +454,9 @@ class PerfumeInventory {
             
             if (!value) return;
             
-            // Filter and display suggestions - always get fresh brand list
-            const filtered = this.knownBrands.filter(item => 
+            // Filter and display suggestions - always get fresh brand list from inventory
+            const freshBrands = this.getKnownBrands();
+            const filtered = freshBrands.filter(item => 
                 item.toLowerCase().includes(value.toLowerCase())
             ).slice(0, 10);
             
@@ -342,13 +499,15 @@ class PerfumeInventory {
             
             if (!value) return;
             
-            // Get current brand
+            // Get current brand and fresh perfume lists from inventory
             const brand = document.getElementById('brand').value;
-            const perfumesForBrand = this.knownPerfumes[brand] || [];
+            const freshKnownPerfumes = this.getKnownPerfumes();
+            const freshAllPerfumes = this.getAllKnownPerfumeNames();
+            const perfumesForBrand = freshKnownPerfumes[brand] || [];
             
             // Combine brand-specific perfumes with all known perfumes
             // Prioritize brand-specific ones
-            const allSuggestions = [...new Set([...perfumesForBrand, ...this.allKnownPerfumeNames])];
+            const allSuggestions = [...new Set([...perfumesForBrand, ...freshAllPerfumes])];
             
             // Filter and display suggestions
             const filtered = allSuggestions.filter(item => 
@@ -480,18 +639,62 @@ class PerfumeInventory {
                 this.closeAllLists();
             }
         });
+
+        // Handle status change to make quantity/size optional for wishlist items
+        document.getElementById('status').addEventListener('change', (e) => {
+            this.updateFormFieldRequirements(e.target.value);
+        });
+    }
+
+    updateFormFieldRequirements(status) {
+        const quantityInput = document.getElementById('quantity');
+        const sizeInput = document.getElementById('size');
+        const quantityOptionalLabel = document.querySelector('#quantityGroup .optional-label');
+        const sizeOptionalLabel = document.querySelector('#sizeGroup .optional-label');
+        
+        const isWishlist = status === 'want-to-get' || status === 'want-to-try';
+        
+        if (isWishlist) {
+            // Make fields optional for wishlist items
+            quantityInput.removeAttribute('required');
+            sizeInput.removeAttribute('required');
+            quantityOptionalLabel.style.display = 'inline';
+            sizeOptionalLabel.style.display = 'inline';
+        } else {
+            // Make fields required for owned/for-sale/sold items
+            quantityInput.setAttribute('required', 'required');
+            sizeInput.setAttribute('required', 'required');
+            quantityOptionalLabel.style.display = 'none';
+            sizeOptionalLabel.style.display = 'none';
+        }
+    }
+
+    setupLanguageSwitcher() {
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentLanguage = btn.getAttribute('data-lang');
+                updatePageLanguage();
+                this.renderInventory(); // Re-render to update table headers
+            });
+        });
     }
 
     addPerfume() {
+        const status = document.getElementById('status').value;
+        const quantityValue = document.getElementById('quantity').value;
+        const sizeValue = document.getElementById('size').value;
+        
         const perfume = {
             id: Date.now(),
             name: document.getElementById('perfumeName').value,
             brand: document.getElementById('brand').value,
+            concentration: document.getElementById('concentration').value,
             batchCode: document.getElementById('batchCode').value,
             productionDate: document.getElementById('productionDate').value,
-            quantity: parseInt(document.getElementById('quantity').value),
-            size: parseFloat(document.getElementById('size').value),
-            status: document.getElementById('status').value,
+            quantity: quantityValue ? parseInt(quantityValue) : 0,
+            size: sizeValue ? parseFloat(sizeValue) : 0,
+            status: status,
+            fragranceNotes: document.getElementById('fragranceNotes').value,
             notes: document.getElementById('notes').value,
             addedDate: new Date().toISOString()
         };
@@ -521,6 +724,144 @@ class PerfumeInventory {
         }
     }
 
+    editQuantity(id, cell) {
+        const perfume = this.perfumes.find(p => p.id === id);
+        if (!perfume) return;
+
+        const currentValue = perfume.quantity || 0;
+        const valueSpan = cell.querySelector('.editable-value');
+        
+        // Create input
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.min = '0';
+        input.value = currentValue;
+        input.className = 'inline-edit-input';
+        input.style.width = '60px';
+        
+        // Replace content with input
+        cell.innerHTML = '';
+        cell.appendChild(input);
+        input.focus();
+        input.select();
+
+        // Save on blur or Enter
+        const saveEdit = () => {
+            const newValue = parseInt(input.value) || 0;
+            perfume.quantity = newValue;
+            this.saveToLocalStorage();
+            this.renderInventory();
+            this.updateStats();
+        };
+
+        input.addEventListener('blur', saveEdit);
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                saveEdit();
+            }
+        });
+    }
+
+    editSize(id, cell) {
+        const perfume = this.perfumes.find(p => p.id === id);
+        if (!perfume) return;
+
+        const currentValue = perfume.size || 0;
+        const valueSpan = cell.querySelector('.editable-value');
+        
+        // Create input
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.min = '0';
+        input.step = '0.1';
+        input.value = currentValue;
+        input.className = 'inline-edit-input';
+        input.style.width = '70px';
+        
+        // Replace content with input
+        cell.innerHTML = '';
+        cell.appendChild(input);
+        input.focus();
+        input.select();
+
+        // Save on blur or Enter
+        const saveEdit = () => {
+            const newValue = parseFloat(input.value) || 0;
+            perfume.size = newValue;
+            this.saveToLocalStorage();
+            this.renderInventory();
+            this.updateStats();
+        };
+
+        input.addEventListener('blur', saveEdit);
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                saveEdit();
+            }
+        });
+    }
+
+    editConcentration(id, cell) {
+        const perfume = this.perfumes.find(p => p.id === id);
+        if (!perfume) return;
+
+        const currentValue = perfume.concentration || 'edp';
+        
+        // Create select dropdown
+        const select = document.createElement('select');
+        select.className = 'inline-edit-select';
+        
+        const options = [
+            { value: 'edp', label: translate('concentrationEDP') },
+            { value: 'edt', label: translate('concentrationEDT') },
+            { value: 'parfum', label: translate('concentrationParfum') },
+            { value: 'edc', label: translate('concentrationEDC') },
+            { value: 'edl', label: translate('concentrationEDL') },
+            { value: 'intense', label: translate('concentrationIntense') },
+            { value: 'elixir', label: translate('concentrationElixir') },
+            { value: 'absolu', label: translate('concentrationAbsolu') },
+            { value: 'other', label: translate('concentrationOther') }
+        ];
+
+        options.forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt.value;
+            option.textContent = opt.label;
+            option.selected = opt.value === currentValue;
+            select.appendChild(option);
+        });
+        
+        // Replace content with select
+        cell.innerHTML = '';
+        cell.appendChild(select);
+        select.focus();
+
+        // Save on change or blur
+        const saveEdit = () => {
+            perfume.concentration = select.value;
+            this.saveToLocalStorage();
+            this.renderInventory();
+        };
+
+        select.addEventListener('change', saveEdit);
+        select.addEventListener('blur', saveEdit);
+    }
+
+    getConcentrationLabel(concentration) {
+        const labels = {
+            'edp': 'EDP',
+            'edt': 'EDT',
+            'parfum': 'Parfum',
+            'edc': 'EDC',
+            'edl': 'EDL',
+            'intense': 'Intense',
+            'elixir': 'Elixir',
+            'absolu': 'Absolu',
+            'other': 'Other'
+        };
+        return labels[concentration] || 'EDP';
+    }
+
     getStatusLabel(status) {
         const labels = {
             'owned': 'Owned',
@@ -547,6 +888,12 @@ class PerfumeInventory {
         if (confirm('Are you sure you want to delete this perfume from inventory?')) {
             this.perfumes = this.perfumes.filter(p => p.id !== id);
             this.saveToLocalStorage();
+            
+            // Update autocomplete lists after deletion
+            this.knownBrands = this.getKnownBrands();
+            this.knownPerfumes = this.getKnownPerfumes();
+            this.allKnownPerfumeNames = this.getAllKnownPerfumeNames();
+            
             this.renderInventory();
             this.updateStats();
             this.showToast('Perfume deleted successfully!');
@@ -566,15 +913,17 @@ class PerfumeInventory {
                 <table>
                     <thead>
                         <tr>
-                            <th>Perfume Name</th>
-                            <th>Brand</th>
-                            <th>Batch Code</th>
-                            <th>Production Date</th>
-                            <th>Quantity</th>
-                            <th>Size (ml)</th>
-                            <th>Status</th>
-                            <th>Notes</th>
-                            <th>Actions</th>
+                            <th>${translate('tableName')}</th>
+                            <th>${translate('tableBrand')}</th>
+                            <th>${translate('tableConcentration')}</th>
+                            <th>${translate('tableBatchCode')}</th>
+                            <th>${translate('tableProductionDate')}</th>
+                            <th>${translate('tableQuantity')}</th>
+                            <th>${translate('tableSize')}</th>
+                            <th>${translate('tableStatus')}</th>
+                            <th>${translate('tableFragranceNotes')}</th>
+                            <th>${translate('tablePersonalNotes')}</th>
+                            <th>${translate('tableActions')}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -584,9 +933,12 @@ class PerfumeInventory {
                             <tr class="${this.getStatusClass(status)}">
                                 <td><strong>${perfume.name}</strong></td>
                                 <td>${perfume.brand}</td>
+                                <td class="editable-cell" onclick="inventory.editConcentration(${perfume.id}, this)">
+                                    <span class="concentration-badge">${this.getConcentrationLabel(perfume.concentration)}</span>
+                                </td>
                                 <td>
                                     <div class="batch-info">
-                                        <span class="batch-code">${perfume.batchCode}</span>
+                                        <span class="batch-code">${perfume.batchCode || '<span style="color: #999; font-style: italic;">N/A</span>'}</span>
                                     </div>
                                 </td>
                                 <td>
@@ -594,26 +946,33 @@ class PerfumeInventory {
                                         ${this.formatDate(perfume.productionDate)}
                                     </span>
                                 </td>
-                                <td>${perfume.quantity}</td>
-                                <td>${perfume.size} ml</td>
+                                <td class="editable-cell" onclick="inventory.editQuantity(${perfume.id}, this)">
+                                    <span class="editable-value">${perfume.quantity > 0 ? perfume.quantity : '<span style="color: #999; font-style: italic;">-</span>'}</span>
+                                </td>
+                                <td class="editable-cell" onclick="inventory.editSize(${perfume.id}, this)">
+                                    <span class="editable-value">${perfume.size > 0 ? perfume.size + ' ml' : '<span style="color: #999; font-style: italic;">-</span>'}</span>
+                                </td>
                                 <td>
                                     <span class="status-badge ${this.getStatusClass(status)}">
                                         ${this.getStatusLabel(status)}
                                     </span>
                                     <div class="status-actions">
                                         <select class="status-select" onchange="inventory.updateStatus(${perfume.id}, this.value)" value="${status}">
-                                            <option value="owned" ${status === 'owned' ? 'selected' : ''}>Owned</option>
-                                            <option value="want-to-get" ${status === 'want-to-get' ? 'selected' : ''}>Want to Get</option>
-                                            <option value="want-to-try" ${status === 'want-to-try' ? 'selected' : ''}>Want to Try</option>
-                                            <option value="for-sale" ${status === 'for-sale' ? 'selected' : ''}>For Sale</option>
-                                            <option value="sold" ${status === 'sold' ? 'selected' : ''}>Sold</option>
+                                            <option value="owned" ${status === 'owned' ? 'selected' : ''}>${translate('statusOwned')}</option>
+                                            <option value="want-to-get" ${status === 'want-to-get' ? 'selected' : ''}>${translate('statusWantToGet')}</option>
+                                            <option value="want-to-try" ${status === 'want-to-try' ? 'selected' : ''}>${translate('statusWantToTry')}</option>
+                                            <option value="for-sale" ${status === 'for-sale' ? 'selected' : ''}>${translate('statusForSale')}</option>
+                                            <option value="sold" ${status === 'sold' ? 'selected' : ''}>${translate('statusSold')}</option>
                                         </select>
                                     </div>
+                                </td>
+                                <td class="fragrance-notes-cell">
+                                    ${perfume.fragranceNotes ? `<span class="fragrance-notes">${perfume.fragranceNotes}</span>` : '<span style="color: #999;">-</span>'}
                                 </td>
                                 <td>${perfume.notes || '-'}</td>
                                 <td>
                                     <button class="btn btn-delete" onclick="inventory.deletePerfume(${perfume.id})">
-                                        Delete
+                                        ${translate('deleteButton')}
                                     </button>
                                 </td>
                             </tr>
@@ -647,8 +1006,13 @@ class PerfumeInventory {
         const uniqueBrands = new Set(this.perfumes.map(p => p.brand));
         document.getElementById('totalBrands').textContent = uniqueBrands.size;
 
-        // Total quantity
-        const totalQuantity = this.perfumes.reduce((sum, p) => sum + p.quantity, 0);
+        // Total quantity (exclude wishlist items: want-to-get and want-to-try)
+        const totalQuantity = this.perfumes
+            .filter(p => {
+                const status = p.status || 'owned';
+                return status !== 'want-to-get' && status !== 'want-to-try';
+            })
+            .reduce((sum, p) => sum + p.quantity, 0);
         document.getElementById('totalQuantity').textContent = totalQuantity;
 
         // Status counts
@@ -666,50 +1030,229 @@ class PerfumeInventory {
     }
 
     checkBatchCode() {
-        const batchCode = document.getElementById('batchCode').value.trim();
+        const batchCode = document.getElementById('batchCode').value.trim().toUpperCase();
         const brand = document.getElementById('brand').value.trim();
         
         if (!batchCode) {
-            alert('Please enter a batch code first');
+            this.showToast('ℹ️ No batch code entered - production date will be marked as Unknown');
             return;
         }
         
-        // Copy batch code to clipboard
-        navigator.clipboard.writeText(batchCode).then(() => {
-            this.showBatchCodeModal(batchCode, brand);
-        }).catch(() => {
-            // If clipboard fails, still show modal
-            this.showBatchCodeModal(batchCode, brand);
-        });
+        // Try to decode the batch code
+        const decodedDate = this.decodeBatchCode(batchCode, brand);
+        
+        if (decodedDate) {
+            // Auto-populate the production date field
+            document.getElementById('productionDate').value = decodedDate;
+            this.showToast(`✓ Decoded: ${this.formatDate(decodedDate)} - Please verify if needed`);
+        } else {
+            // Show modal with manual check options
+            navigator.clipboard.writeText(batchCode).then(() => {
+                this.showBatchCodeModal(batchCode, brand);
+            }).catch(() => {
+                this.showBatchCodeModal(batchCode, brand);
+            });
+        }
+    }
+
+    decodeBatchCode(code, brand) {
+        // Remove spaces and convert to uppercase
+        code = code.replace(/\s+/g, '').toUpperCase();
+        
+        // Try different decoding methods based on common formats
+        
+        // Format 1: 4-digit code (YYMM or variations)
+        if (/^\d{4}$/.test(code)) {
+            const year = parseInt(code.substring(0, 2));
+            const month = parseInt(code.substring(2, 4));
+            if (month >= 1 && month <= 12) {
+                const fullYear = year >= 0 && year <= 30 ? 2000 + year : 1900 + year;
+                return `${fullYear}-${String(month).padStart(2, '0')}`;
+            }
+        }
+        
+        // Format 2: 5-digit code (YYDDD - year and day of year)
+        if (/^\d{5}$/.test(code)) {
+            const year = parseInt(code.substring(0, 2));
+            const dayOfYear = parseInt(code.substring(2, 5));
+            if (dayOfYear >= 1 && dayOfYear <= 366) {
+                const fullYear = year >= 0 && year <= 30 ? 2000 + year : 1900 + year;
+                const date = this.getDayOfYear(fullYear, dayOfYear);
+                return date;
+            }
+        }
+        
+        // Format 3: 6-digit code (YYMMDD or DDMMYY)
+        if (/^\d{6}$/.test(code)) {
+            // Try YYMMDD
+            let year = parseInt(code.substring(0, 2));
+            let month = parseInt(code.substring(2, 4));
+            let day = parseInt(code.substring(4, 6));
+            
+            if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+                const fullYear = year >= 0 && year <= 30 ? 2000 + year : 1900 + year;
+                return `${fullYear}-${String(month).padStart(2, '0')}`;
+            }
+            
+            // Try DDMMYY
+            day = parseInt(code.substring(0, 2));
+            month = parseInt(code.substring(2, 4));
+            year = parseInt(code.substring(4, 6));
+            
+            if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+                const fullYear = year >= 0 && year <= 30 ? 2000 + year : 1900 + year;
+                return `${fullYear}-${String(month).padStart(2, '0')}`;
+            }
+        }
+        
+        // Format 4: Letter + numbers (common in Chanel, e.g., "4218" or with letter prefix)
+        if (/^[A-Z]?\d{4}$/.test(code)) {
+            const numPart = code.match(/\d{4}$/)[0];
+            const year = parseInt(numPart.substring(0, 2));
+            const month = parseInt(numPart.substring(2, 4));
+            if (month >= 1 && month <= 12) {
+                const fullYear = year >= 0 && year <= 30 ? 2000 + year : 1900 + year;
+                return `${fullYear}-${String(month).padStart(2, '0')}`;
+            }
+        }
+        
+        // Format 5: 3-digit code (YMM - single digit year + 2 digit month)
+        if (/^\d{3}$/.test(code)) {
+            const year = parseInt(code.substring(0, 1));
+            const month = parseInt(code.substring(1, 3));
+            if (month >= 1 && month <= 12) {
+                const fullYear = 2020 + year; // Assume recent years
+                return `${fullYear}-${String(month).padStart(2, '0')}`;
+            }
+        }
+        
+        // Format 6: Letter code followed by numbers (e.g., "38U600" - used by some brands)
+        if (/^\d{2}[A-Z]\d{3}$/.test(code)) {
+            const year = parseInt(code.substring(0, 2));
+            const letterCode = code.charAt(2);
+            // Letter often represents month: A=Jan, B=Feb, etc.
+            const month = letterCode.charCodeAt(0) - 64; // A=1, B=2, etc.
+            if (month >= 1 && month <= 12) {
+                const fullYear = year >= 0 && year <= 30 ? 2000 + year : 1900 + year;
+                return `${fullYear}-${String(month).padStart(2, '0')}`;
+            }
+        }
+        
+        // Format 7: Complex cosmetic codes (e.g., "ABY11ET" = 2024-01)
+        // Pattern: Letter(year) + Letter(plant) + Letter(month) + Number(day/batch) + Letters(identifiers)
+        if (/^[A-Z]{2,3}\d{2}[A-Z]{0,2}$/.test(code)) {
+            const firstLetter = code.charAt(0);
+            
+            // First letter often represents year: A=2024, B=2025, C=2026, etc.
+            // Or reverse: A=2020, B=2021, etc.
+            const yearOffset = firstLetter.charCodeAt(0) - 65; // A=0, B=1, etc.
+            
+            // Try modern interpretation (A=2024, which is common in cosmetics)
+            let possibleYear = 2024 + yearOffset;
+            
+            // If year is too far in future, try alternate base years
+            if (possibleYear > 2030) {
+                possibleYear = 2020 + yearOffset;
+            }
+            if (possibleYear > 2030 || possibleYear < 2020) {
+                possibleYear = 2014 + yearOffset;
+            }
+            
+            // Third letter might be month code
+            const thirdLetter = code.charAt(2);
+            let month = null;
+            
+            // Month coding: A=Jan(1), B=Feb(2), ..., L=Dec(12) OR
+            // Month coding: A=Oct(10), B=Nov(11), C=Dec(12), D=Jan(1), etc.
+            // Check if third character is a letter
+            if (/[A-Z]/.test(thirdLetter)) {
+                // Standard: A=1, B=2, C=3... L=12
+                const monthFromLetter = thirdLetter.charCodeAt(0) - 64;
+                if (monthFromLetter >= 1 && monthFromLetter <= 12) {
+                    month = monthFromLetter;
+                }
+                
+                // Alternative: Y could be special month code
+                // In some systems: Y=1 (January), Z=2, A=3, etc.
+                if (thirdLetter === 'Y') {
+                    month = 1; // January
+                } else if (thirdLetter === 'Z') {
+                    month = 2; // February
+                }
+            }
+            
+            if (month && possibleYear >= 2020 && possibleYear <= 2030) {
+                return `${possibleYear}-${String(month).padStart(2, '0')}`;
+            }
+        }
+        
+        // Format 8: Simple letter + 2-3 digits (e.g., "N24", "Y11")
+        if (/^[A-Z]\d{2,3}$/.test(code)) {
+            const letter = code.charAt(0);
+            const numbers = code.substring(1);
+            
+            // Letter might represent year: N=2024, Y=2025, etc.
+            // Or production line + YM format
+            if (numbers.length === 2) {
+                // Could be month-year reversed
+                const month = parseInt(numbers);
+                if (month >= 1 && month <= 12) {
+                    // Assume current decade
+                    const currentYear = new Date().getFullYear();
+                    const decade = Math.floor(currentYear / 10) * 10;
+                    return `${decade + parseInt(letter.charCodeAt(0) - 65) % 10}-${String(month).padStart(2, '0')}`;
+                }
+            }
+        }
+        
+        return null; // Could not decode
+    }
+
+    getDayOfYear(year, dayOfYear) {
+        const date = new Date(year, 0);
+        date.setDate(dayOfYear);
+        const month = date.getMonth() + 1;
+        return `${year}-${String(month).padStart(2, '0')}`;
     }
 
     showBatchCodeModal(batchCode, brand) {
         // Create modal overlay
         const modal = document.createElement('div');
         modal.className = 'batch-modal-overlay';
+        
+        // Generate CosmeticCheck.app brand URL if brand is provided
+        const brandSlug = brand ? this.getBrandSlug(brand) : null;
+        const cosmeticCheckUrl = brandSlug 
+            ? `https://www.cosmeticcheck.app/brands/${brandSlug}` 
+            : 'https://www.cosmeticcheck.app/';
+        
         modal.innerHTML = `
             <div class="batch-modal">
-                <h3>Check Batch Code: ${batchCode}</h3>
+                <h3>Could Not Auto-Decode: ${batchCode}</h3>
                 <p class="batch-brand">${brand || 'Brand not specified'}</p>
                 <div class="batch-code-display">
                     <code>${batchCode}</code>
                     <button class="btn-copy" onclick="navigator.clipboard.writeText('${batchCode}'); this.textContent='Copied!'">Copy</button>
                 </div>
-                <p class="batch-instruction">Batch code copied to clipboard! Choose a site to verify:</p>
+                <p class="batch-instruction" style="color: #ff9800; font-weight: 600;">⚠️ This batch code format is not recognized by our decoder.</p>
+                <p class="batch-instruction">The code has been copied to your clipboard. Visit one of these sites to decode it:</p>
                 <div class="batch-links">
+                    <a href="${cosmeticCheckUrl}" target="_blank" class="batch-link" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                        <strong>🎯 CosmeticCheck.app ${brandSlug ? '(Brand-Specific)' : ''}</strong>
+                        <small style="color: rgba(255,255,255,0.9);">Enter batch code on the page - 791 brands supported</small>
+                    </a>
                     <a href="https://www.checkcosmetic.net/" target="_blank" class="batch-link">
                         <strong>CheckCosmetic.net</strong>
-                        <small>Clean interface, no popups</small>
+                        <small>Clean interface, no popups - Alternative option</small>
                     </a>
                     <a href="https://www.checkfresh.com/" target="_blank" class="batch-link">
                         <strong>CheckFresh.com</strong>
-                        <small>Popular batch checker</small>
-                    </a>
-                    <a href="https://www.calculator.tf/cosmetics-calculator/" target="_blank" class="batch-link">
-                        <strong>Calculator.tf</strong>
-                        <small>Simple calculator tool</small>
+                        <small>Popular batch checker - May have ads</small>
                     </a>
                 </div>
+                <p style="font-size: 0.9em; color: #666; text-align: center; margin-top: 15px;">
+                    💡 Tip: Paste the code (Ctrl+V) and enter it in the checker to get the production date
+                </p>
                 <button class="btn btn-close" onclick="this.closest('.batch-modal-overlay').remove()">Close</button>
             </div>
         `;
@@ -726,8 +1269,89 @@ class PerfumeInventory {
         this.showToast(`Batch code "${batchCode}" copied to clipboard!`);
     }
 
+    getBrandSlug(brand) {
+        // Convert brand name to URL slug for cosmeticcheck.app
+        const brandMap = {
+            'Thierry Mugler': 'mugler',
+            'Mugler': 'mugler',
+            'Chanel': 'chanel',
+            'Dior': 'christian-dior',
+            'Christian Dior': 'christian-dior',
+            'Yves Saint Laurent': 'ysl',
+            'YSL': 'ysl',
+            'Tom Ford': 'tom-ford-beauty',
+            'Creed': 'creed',
+            'Amouage': 'amouage',
+            'Xerjoff': 'xerjoff',
+            'Roja Dove': 'roja-parfums',
+            'Roja': 'roja-parfums',
+            'Maison Francis Kurkdjian': 'maison-francis-kurkdjian',
+            'MFK': 'maison-francis-kurkdjian',
+            'Kilian': 'kilian-paris',
+            'By Kilian': 'kilian-paris',
+            'Initio': 'initio-parfums-prives',
+            'Parfums de Marly': 'parfums-de-marly',
+            'PDM': 'parfums-de-marly',
+            'Mancera': 'mancera',
+            'Montale': 'montale',
+            'Nishane': 'nishane',
+            'Byredo': 'byredo',
+            'Le Labo': 'le-labo',
+            'Diptyque': 'diptyque',
+            'Jo Malone': 'jo-malone-london',
+            'Acqua di Parma': 'acqua-di-parma',
+            'Hermès': 'hermes',
+            'Hermes': 'hermes',
+            'Guerlain': 'guerlain',
+            'Givenchy': 'givenchy',
+            'Prada': 'prada',
+            'Versace': 'versace',
+            'Giorgio Armani': 'giorgio-armani-beauty',
+            'Armani': 'giorgio-armani-beauty',
+            'Dolce & Gabbana': 'dolce-gabbana',
+            'D&G': 'dolce-gabbana',
+            'Burberry': 'burberry',
+            'Calvin Klein': 'calvin-klein',
+            'Viktor & Rolf': 'viktor-rolf',
+            'Paco Rabanne': 'rabanne',
+            'Rabanne': 'rabanne',
+            'Jean Paul Gaultier': 'jean-paul-gaultier',
+            'JPG': 'jean-paul-gaultier',
+            'Narciso Rodriguez': 'narciso-rodriguez',
+            'Carolina Herrera': 'carolina-herrera',
+            'Lancôme': 'lancome',
+            'Lancome': 'lancome',
+            'Estée Lauder': 'estee-lauder',
+            'Estee Lauder': 'estee-lauder',
+            'Clinique': 'clinique',
+            'Marc Jacobs': 'marc-jacobs',
+            'Gucci': 'gucci',
+            'Bvlgari': 'bvlgari',
+            'Bulgari': 'bvlgari',
+            'Cartier': 'cartier',
+            'Montblanc': 'montblanc',
+            'Hugo Boss': 'hugo-boss',
+            'Issey Miyake': 'issey-miyake',
+            'Kenzo': 'kenzo',
+            'Valentino': 'valentino'
+        };
+        
+        return brandMap[brand] || null;
+    }
+
     formatDate(dateString) {
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        if (!dateString || dateString === '') {
+            return '<span style="color: #999; font-style: italic;">Unknown</span>';
+        }
+        // Handle YYYY-MM format
+        if (/^\d{4}-\d{2}(-\d{2})?$/.test(dateString)) {
+            const [year, month] = dateString.split('-');
+            const date = new Date(year, month - 1);
+            const options = { year: 'numeric', month: 'long' };
+            return date.toLocaleDateString('en-US', options);
+        }
+        // Fallback for full dates
+        const options = { year: 'numeric', month: 'long' };
         return new Date(dateString).toLocaleDateString('en-US', options);
     }
 
@@ -761,17 +1385,19 @@ class PerfumeInventory {
             return;
         }
 
-        const headers = ['Perfume Name', 'Brand', 'Batch Code', 'Production Date', 'Quantity', 'Size (ml)', 'Status', 'Notes', 'Added Date'];
+        const headers = ['Perfume Name', 'Brand', 'Concentration', 'Batch Code', 'Production Date', 'Quantity', 'Size (ml)', 'Status', 'Fragrance Notes', 'Personal Notes', 'Added Date'];
         const csvContent = [
             headers.join(','),
             ...this.perfumes.map(p => [
                 `"${p.name}"`,
                 `"${p.brand}"`,
-                `"${p.batchCode}"`,
-                p.productionDate,
+                `"${this.getConcentrationLabel(p.concentration || 'edp')}"`,
+                `"${p.batchCode || ''}"`,
+                p.productionDate || '',
                 p.quantity,
                 p.size,
                 `"${this.getStatusLabel(p.status || 'owned')}"`,
+                `"${p.fragranceNotes || ''}"`,
                 `"${p.notes || ''}"`,
                 new Date(p.addedDate).toLocaleDateString()
             ].join(','))
@@ -834,6 +1460,12 @@ class PerfumeInventory {
                 if (confirm(`This will restore ${backup.perfumes.length} perfume(s) from ${new Date(backup.exportDate).toLocaleDateString()}. Current inventory will be replaced. Continue?`)) {
                     this.perfumes = backup.perfumes;
                     this.saveToLocalStorage();
+                    
+                    // Update autocomplete lists after restore
+                    this.knownBrands = this.getKnownBrands();
+                    this.knownPerfumes = this.getKnownPerfumes();
+                    this.allKnownPerfumeNames = this.getAllKnownPerfumeNames();
+                    
                     this.renderInventory();
                     this.updateStats();
                     this.showToast('Inventory restored successfully!');

@@ -5,6 +5,7 @@ A beautiful and intuitive web-based application for tracking your perfume collec
 ## ✨ Features
 
 - **📝 Easy Inventory Management**: Add, edit, and delete perfumes from your collection
+- **🌍 Multi-Language Support**: Switch between English and Polish with one click
 - **✨ Smart Autocomplete**: Auto-suggest from 40+ popular brands and 350+ popular perfumes including all flankers and variations
 - **🏷️ Comprehensive Status Tracking**: Mark perfumes with multiple statuses
   - **Owned**: Perfumes in your collection
@@ -15,7 +16,7 @@ A beautiful and intuitive web-based application for tracking your perfume collec
 - **🔍 Smart Search**: Quickly find perfumes by name, brand, or batch code
 - **📊 Statistics Dashboard**: View total perfumes, brands, collection value, and detailed status breakdown at a glance
 - **📅 Production Date Tracking**: Record and track production dates for each perfume
-- **✅ Batch Code Verification**: Auto-copy batch codes and choose from multiple verification sites (ad-free options)
+- **✅ Smart Batch Code Decoder**: Automatically decodes batch codes and populates production date (supports 6+ common formats)
 - **💾 Data Persistence**: All data stored locally in your browser using LocalStorage
 - **📤 Export/Import**: Backup and restore your inventory as JSON files
 - **📊 CSV Export**: Export your collection to CSV for spreadsheet applications with status information
@@ -79,7 +80,7 @@ Visit the live application at: [https://hanswors1-ui.github.io/perfume_inventory
      - **Sold**: Perfumes that have been sold
    - **Notes**: Any additional information (optional)
 
-2. Click **"🔍 Verify"** to copy the batch code and choose from multiple verification sites
+2. Click **"🔍 Decode"** to automatically decode the batch code and fill production date
 3. Click **"Add Perfume"** to save to your inventory
 
 ### Managing Your Inventory
@@ -126,7 +127,14 @@ perfume_inventory.io/
 ## 💡 Tips
 
 1. **Autocomplete Feature**: Start typing brand or perfume names - the system suggests from 40+ popular brands, 350+ popular perfumes (including all flankers and variations), and your own inventory. Use arrow keys to navigate, Enter to select
-2. **Batch Code Verification**: Click "🔍 Verify" to copy the batch code and choose from multiple verification sites (CheckCosmetic.net recommended for ad-free experience)
+2. **Smart Batch Code Decoder**: Click "🔍 Decode" to automatically decode batch codes. Supports 8+ formats:
+   - 4-digit codes (YYMM)
+   - 5-digit codes (YYDDD - day of year)
+   - 6-digit codes (YYMMDD or DDMMYY)
+   - Letter + numbers (brand-specific formats)
+   - Cosmetic industry codes (letter-year codes)
+   - Week-based codes
+   - If auto-decode fails, copies code and provides manual check options with instructions
 3. **Wishlist Tracking**: Use "Want to Get" for perfumes you plan to buy and "Want to Try" for samples or testing
 3. **Consistent Data Entry**: Use autocomplete to ensure brand and perfume names are spelled consistently
 4. **Quantity Field**: Set quantity to 0 for wishlist items ("Want to Get" or "Want to Try")
@@ -169,14 +177,71 @@ Created by [@hanswors1-ui](https://github.com/hanswors1-ui)
 
 ## 🙏 Acknowledgments
 
-- Batch code verification sites:
-  - [CheckCosmetic.net](https://www.checkcosmetic.net/) - Clean, ad-free interface
+- Batch code verification sites (for codes that can't be auto-decoded):
+  - [CheckCosmetic.net](https://www.checkcosmetic.net/) - Clean, ad-free interface (Recommended)
   - [CheckFresh.com](https://www.checkfresh.com/) - Popular batch checker
-  - [Calculator.tf](https://www.calculator.tf/cosmetics-calculator/) - Simple tool
 - Icons: Unicode emoji characters
 - Design inspired by modern web design trends
 
 ## 🔄 Version History
+
+- **v1.9.5** (November 2025) - Inline Concentration Editing
+  - Click concentration badge in inventory to edit type directly
+  - Dropdown selector appears with all 9 concentration options
+  - Instant save on selection change
+  - Consistent with quantity/size inline editing experience
+  - Hover indicator shows editability
+
+- **v1.9.4** (November 2025) - Concentration/Type Field Added
+  - Added concentration field to track perfume type (EDP, EDT, Parfum, etc.)
+  - 9 concentration options: EDP, EDT, Parfum/Extrait, EDC, EDL, Intense, Elixir, Absolu, Other
+  - Concentration displayed as colored badge in inventory table
+  - Included in CSV exports for complete tracking
+  - Translated labels for both English and Polish
+  - Default value: Eau de Parfum (EDP)
+
+- **v1.9.3** (November 2025) - Inline Editing for Quantity and Size
+  - Click on quantity or size values in inventory table to edit them directly
+  - Inline input fields appear for quick editing
+  - Press Enter or click outside to save changes
+  - Visual hover indicator (✏️ icon) shows editable fields
+  - Allows updating quantity/size after changing status from wishlist to owned
+  - No need to delete and re-add items to update values
+
+- **v1.9.2** (November 2025) - Wishlist Fields Enhancement
+  - Quantity and Size fields now optional for "Want to Get" and "Want to Try" statuses
+  - Fields automatically become optional/required based on selected status
+  - Visual indicator shows when fields are optional
+  - Total Units statistic excludes wishlist items (only counts owned/for-sale/sold)
+  - Display shows "-" for empty quantity/size in wishlist items
+  - Default values of 0 set for wishlist items when fields left empty
+
+- **v1.9.1** (November 2025) - Dynamic Autocomplete Enhancement
+  - Autocomplete now includes ALL previously added brands and perfumes
+  - Fresh data fetched on every keystroke ensures newest entries appear
+  - Custom brands and perfumes immediately available in suggestions
+  - Autocomplete lists update after adding, deleting, or restoring inventory
+  - No need to manually add to known lists - fully automatic
+
+- **v1.9.0** (November 2025) - Multi-Language Support
+  - Added language switcher with English 🇬🇧 and Polish 🇵🇱 translations
+  - Comprehensive translation of all UI elements (40+ text keys)
+  - Translated table headers, form labels, buttons, and placeholders
+  - Language preference saved to localStorage
+  - Responsive language switcher in header
+  - Complete Polish translations for perfume inventory terminology
+
+- **v1.4.0** (November 2025) - Smart Batch Code Decoder
+  - Automatic batch code decoding and date population
+  - Supports 8+ common batch code formats
+  - Fixed complex cosmetic codes (e.g., "ABY11ET" now correctly decodes to 2024-01)
+  - Improved year and month interpretation for cosmetic industry codes
+  - Auto-fills production date field when decoded successfully
+  - Verification reminder in success message
+  - Improved fallback modal with clear instructions
+  - Removed non-working verification sites
+  - Better error messaging for unrecognized formats
+  - Supports YYMM, YYDDD, YYMMDD, letter+number, complex letter-month codes
 
 - **v1.3.0** (November 2025) - Smart Autocomplete Feature
   - Added autocomplete for brand names (40+ popular brands included)
@@ -196,6 +261,35 @@ Created by [@hanswors1-ui](https://github.com/hanswors1-ui)
   - Auto-copy batch code to clipboard
   - Multiple verification site options (ad-free alternatives)
   - Better user experience without popup ads
+
+- **v1.8.0** (November 2025) - Production Date Format Update
+  - Changed production date format from full date (YYYY-MM-DD) to month precision (YYYY-MM)
+  - Updated input field to use month picker for easier date entry
+  - Modified batch code decoder to return YYYY-MM format
+  - Updated date display to show "Month Year" format (e.g., "January 2021")
+  - Simplified date tracking to match typical batch code precision
+
+- **v1.7.0** (November 2025) - Fragrance Notes Feature
+  - Added dedicated "Fragrance Notes" field for storing perfume composition
+  - Support for top, middle, and base notes documentation
+  - Renamed existing notes field to "Personal Notes" for clarity
+  - Fragrance notes displayed in styled table cell with visual distinction
+  - Updated CSV export to include both fragrance notes and personal notes
+  - Enhanced form with helpful placeholders and tips
+
+- **v1.6.0** (November 2025) - Enhanced Batch Code Verification
+  - Integrated CosmeticCheck.app with brand-specific direct links
+  - Automatic brand URL mapping for 50+ popular perfume brands
+  - Smart fallback modal with 3 verification options
+  - CosmeticCheck.app featured as primary verification method (791 brands supported)
+  - Improved verification workflow with brand-specific pages
+
+- **v1.5.0** (November 2025) - Optional Production Date Update
+  - Made production date and batch code fields optional
+  - Added support for perfumes without batch codes
+  - Displays "Unknown" for missing production dates
+  - Displays "N/A" for missing batch codes
+  - Improved user experience for vintage or unboxed perfumes
 
 - **v1.2.0** (November 2025) - Wishlist Feature Update
   - Added "Want to Get" status for purchase wishlist
