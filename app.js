@@ -171,15 +171,18 @@ class PerfumeInventory {
 
     async loadFromAPI() {
         try {
+            console.log('Loading perfumes from API...');
             const response = await fetch('Perfumes_api/perfume.json');
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
+            console.log(`Loaded ${data.length} perfumes from API`);
             this.perfumes = data;
             this.knownPerfumes = this.getKnownPerfumes();
             this.allKnownPerfumeNames = this.getAllKnownPerfumeNames();
             this.setupAutocomplete();
+            console.log('Perfumes loaded successfully');
             return data;
         } catch (error) {
             console.error('Failed to load perfumes from API:', error);
@@ -207,7 +210,12 @@ class PerfumeInventory {
     getKnownPerfumes() {
         // Get perfume names from both lists grouped by brand
         const perfumesByBrand = {};
-        [...this.perfumes, ...this.decants].forEach(p => {
+        
+        // Safely handle non-array perfumes
+        const perfumesToProcess = Array.isArray(this.perfumes) ? this.perfumes : [];
+        const decantsToProcess = Array.isArray(this.decants) ? this.decants : [];
+        
+        [...perfumesToProcess, ...decantsToProcess].forEach(p => {
             if (!perfumesByBrand[p.brand]) {
                 perfumesByBrand[p.brand] = [];
             }
@@ -219,6 +227,9 @@ class PerfumeInventory {
     }
 
     getAllKnownPerfumeNames() {
+        if (!Array.isArray(this.perfumes)) {
+            return [];
+        }
         return this.perfumes.map(perfume => perfume.name);
     }
 
