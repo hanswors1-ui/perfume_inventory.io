@@ -162,6 +162,21 @@ let currentView = localStorage.getItem('currentView') || 'bottles';
 
 class PerfumeInventory {
     constructor() {
+        // Clear old incorrect inventory data if it exists (from when API catalog was being saved as inventory)
+        const savedInventory = localStorage.getItem('perfumeInventory');
+        if (savedInventory) {
+            try {
+                const data = JSON.parse(savedInventory);
+                // If the saved inventory has 999+ items, it's likely the old catalog - clear it
+                if (Array.isArray(data) && data.length > 500) {
+                    console.log('Detected old catalog data in inventory, clearing...');
+                    localStorage.removeItem('perfumeInventory');
+                }
+            } catch (e) {
+                // Ignore parse errors
+            }
+        }
+        
         // User's inventory - loaded from localStorage
         this.perfumes = this.loadFromLocalStorage('bottles') || [];
         this.decants = this.loadFromLocalStorage('decants') || [];
