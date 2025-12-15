@@ -233,6 +233,19 @@ class PerfumeInventory {
         return this.perfumes.map(perfume => perfume.name);
     }
 
+    getKnownBrands() {
+        if (!Array.isArray(this.perfumes)) {
+            return [];
+        }
+        const brands = new Set();
+        this.perfumes.forEach(perfume => {
+            if (perfume.brand) {
+                brands.add(perfume.brand);
+            }
+        });
+        return Array.from(brands).sort();
+    }
+
     setupAutocomplete() {
         const brandInput = document.getElementById('brand');
         const perfumeInput = document.getElementById('perfumeName');
