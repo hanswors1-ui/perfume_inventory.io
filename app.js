@@ -162,10 +162,10 @@ let currentView = localStorage.getItem('currentView') || 'bottles';
 
 class PerfumeInventory {
     constructor() {
-        this.perfumes = this.loadFromAPI();
+        this.perfumes = [];
         this.decants = this.loadFromLocalStorage('decants');
-        this.knownPerfumes = this.getKnownPerfumes();
-        this.allKnownPerfumeNames = this.getAllKnownPerfumeNames();
+        this.knownPerfumes = {};
+        this.allKnownPerfumeNames = [];
         this.init();
     }
 
@@ -176,20 +176,28 @@ class PerfumeInventory {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
+            this.perfumes = data;
+            this.knownPerfumes = this.getKnownPerfumes();
+            this.allKnownPerfumeNames = this.getAllKnownPerfumeNames();
+            this.setupAutocomplete();
             return data;
         } catch (error) {
             console.error('Failed to load perfumes from API:', error);
+            this.perfumes = [];
             return [];
         }
     }
 
     init() {
         this.setupEventListeners();
-        this.setupAutocomplete();
         this.setupLanguageSwitcher();
         this.setupViewSwitcher();
-        this.switchView(currentView);
         updatePageLanguage();
+        
+        // Load perfumes from API after initialization
+        this.loadFromAPI().then(() => {
+            this.switchView(currentView);
+        });
     }
 
     getCurrentList() {
