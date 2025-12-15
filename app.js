@@ -162,31 +162,36 @@ let currentView = localStorage.getItem('currentView') || 'bottles';
 
 class PerfumeInventory {
     constructor() {
-        this.perfumes = [];
-        this.decants = this.loadFromLocalStorage('decants');
+        // User's inventory - loaded from localStorage
+        this.perfumes = this.loadFromLocalStorage('bottles') || [];
+        this.decants = this.loadFromLocalStorage('decants') || [];
+        
+        // Catalog from API - used for autocomplete suggestions only
+        this.perfumeCatalog = [];
         this.knownPerfumes = {};
         this.allKnownPerfumeNames = [];
+        
         this.init();
     }
 
     async loadFromAPI() {
         try {
-            console.log('Loading perfumes from API...');
+            console.log('Loading perfume catalog from API...');
             const response = await fetch('Perfumes_api/perfume.json');
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
-            console.log(`Loaded ${data.length} perfumes from API`);
-            this.perfumes = data;
+            console.log(`Loaded ${data.length} perfumes from API catalog`);
+            this.perfumeCatalog = data;
             this.knownPerfumes = this.getKnownPerfumes();
             this.allKnownPerfumeNames = this.getAllKnownPerfumeNames();
             this.setupAutocomplete();
-            console.log('Perfumes loaded successfully');
+            console.log('Perfume catalog loaded successfully');
             return data;
         } catch (error) {
-            console.error('Failed to load perfumes from API:', error);
-            this.perfumes = [];
+            console.error('Failed to load perfume catalog from API:', error);
+            this.perfumeCatalog = [];
             return [];
         }
     }
@@ -208,14 +213,13 @@ class PerfumeInventory {
     }
 
     getKnownPerfumes() {
-        // Get perfume names from both lists grouped by brand
+        // Get perfume names from the API catalog grouped by brand (for autocomplete suggestions)
         const perfumesByBrand = {};
         
-        // Safely handle non-array perfumes
-        const perfumesToProcess = Array.isArray(this.perfumes) ? this.perfumes : [];
-        const decantsToProcess = Array.isArray(this.decants) ? this.decants : [];
+        // Use the catalog for autocomplete suggestions, not the user's inventory
+        const catalogToProcess = Array.isArray(this.perfumeCatalog) ? this.perfumeCatalog : [];
         
-        [...perfumesToProcess, ...decantsToProcess].forEach(p => {
+        catalogToProcess.forEach(p => {
             if (!perfumesByBrand[p.brand]) {
                 perfumesByBrand[p.brand] = [];
             }
@@ -227,18 +231,18 @@ class PerfumeInventory {
     }
 
     getAllKnownPerfumeNames() {
-        if (!Array.isArray(this.perfumes)) {
+        if (!Array.isArray(this.perfumeCatalog)) {
             return [];
         }
-        return this.perfumes.map(perfume => perfume.name);
+        return this.perfumeCatalog.map(perfume => perfume.name);
     }
 
     getKnownBrands() {
-        if (!Array.isArray(this.perfumes)) {
+        if (!Array.isArray(this.perfumeCatalog)) {
             return [];
         }
         const brands = new Set();
-        this.perfumes.forEach(perfume => {
+        this.perfumeCatalog.forEach(perfume => {
             if (perfume.brand) {
                 brands.add(perfume.brand);
             }
