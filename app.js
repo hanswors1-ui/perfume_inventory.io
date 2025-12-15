@@ -164,7 +164,6 @@ class PerfumeInventory {
     constructor() {
         this.perfumes = this.loadFromAPI();
         this.decants = this.loadFromLocalStorage('decants');
-        this.knownBrands = this.getKnownBrands();
         this.knownPerfumes = this.getKnownPerfumes();
         this.allKnownPerfumeNames = this.getAllKnownPerfumeNames();
         this.init();
@@ -195,27 +194,6 @@ class PerfumeInventory {
 
     getCurrentList() {
         return currentView === 'bottles' ? this.perfumes : this.decants;
-    }
-
-    getKnownBrands() {
-        // Start with popular brands
-        const popularBrands = [
-            'Chanel', 'Dior', 'Tom Ford', 'Creed', 'Yves Saint Laurent', 'Giorgio Armani',
-            'Gucci', 'Versace', 'Prada', 'Dolce & Gabbana', 'Burberry', 'Calvin Klein',
-            'Hugo Boss', 'Hermès', 'Jo Malone', 'Le Labo', 'Maison Francis Kurkdjian',
-            'Byredo', 'Parfums de Marly', 'Acqua di Parma', 'Amouage', 'Atelier Cologne',
-            'Chloe', 'Givenchy', 'Lancôme', 'Marc Jacobs', 'Montblanc', 'Paco Rabanne',
-            'Thierry Mugler', 'Viktor & Rolf', 'Valentino', 'Carolina Herrera',
-            'Estée Lauder', 'Jean Paul Gaultier', 'Kilian', 'Narciso Rodriguez',
-            'Penhaligon\'s', 'Roja Parfums', 'Xerjoff', 'Nishane', 'Mancera', 'Montale'
-        ];
-        
-        // Add brands from both bottles and decants
-        const bottleBrands = [...new Set(this.perfumes.map(p => p.brand))];
-        const decantBrands = [...new Set(this.decants.map(p => p.brand))];
-        
-        // Combine and sort
-        return [...new Set([...popularBrands, ...bottleBrands, ...decantBrands])].sort();
     }
 
     getKnownPerfumes() {
@@ -394,7 +372,7 @@ class PerfumeInventory {
         
         // Add active class to current item
         if (index >= items.length) index = 0;
-        if (index < 0) index = items.length - 1;
+        if (index < 0) items.length - 1;
         
         if (items[index]) {
             items[index].classList.add('autocomplete-active');
@@ -589,7 +567,6 @@ class PerfumeInventory {
         this.saveToLocalStorage();
         
         // Update known brands and perfumes for autocomplete
-        this.knownBrands = this.getKnownBrands();
         this.knownPerfumes = this.getKnownPerfumes();
         this.allKnownPerfumeNames = this.getAllKnownPerfumeNames();
         
@@ -794,7 +771,6 @@ class PerfumeInventory {
             this.saveToLocalStorage();
             
             // Update autocomplete lists after deletion
-            this.knownBrands = this.getKnownBrands();
             this.knownPerfumes = this.getKnownPerfumes();
             this.allKnownPerfumeNames = this.getAllKnownPerfumeNames();
             
@@ -1387,7 +1363,6 @@ class PerfumeInventory {
                     this.saveToLocalStorage();
                     
                     // Update autocomplete lists after restore
-                    this.knownBrands = this.getKnownBrands();
                     this.knownPerfumes = this.getKnownPerfumes();
                     this.allKnownPerfumeNames = this.getAllKnownPerfumeNames();
                     
