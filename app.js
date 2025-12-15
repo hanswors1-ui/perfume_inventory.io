@@ -162,12 +162,26 @@ let currentView = localStorage.getItem('currentView') || 'bottles';
 
 class PerfumeInventory {
     constructor() {
-        this.perfumes = this.loadFromLocalStorage('perfumes');
+        this.perfumes = this.loadFromAPI();
         this.decants = this.loadFromLocalStorage('decants');
         this.knownBrands = this.getKnownBrands();
         this.knownPerfumes = this.getKnownPerfumes();
         this.allKnownPerfumeNames = this.getAllKnownPerfumeNames();
         this.init();
+    }
+
+    async loadFromAPI() {
+        try {
+            const response = await fetch('Perfumes_api/perfume.json');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Failed to load perfumes from API:', error);
+            return [];
+        }
     }
 
     init() {
@@ -219,212 +233,7 @@ class PerfumeInventory {
     }
 
     getAllKnownPerfumeNames() {
-        // Comprehensive perfume names list
-        const popularPerfumes = [
-            // Chanel
-            'Bleu de Chanel', 'Bleu de Chanel EDT', 'Bleu de Chanel EDP', 'Bleu de Chanel Parfum',
-            'Coco Mademoiselle', 'Coco Mademoiselle Intense', 'Coco Mademoiselle EDP',
-            'No. 5', 'No. 5 L\'Eau', 'No. 5 Eau Premiere', 'Chance', 'Chance Eau Tendre',
-            'Chance Eau Fraiche', 'Chance Eau Vive', 'Allure', 'Allure Homme Sport',
-            'Allure Homme Sport Eau Extreme', 'Gabrielle', 'Coco Noir',
-            
-            // Dior
-            'Sauvage', 'Sauvage EDT', 'Sauvage EDP', 'Sauvage Parfum', 'Sauvage Elixir',
-            'J\'adore', 'J\'adore Absolu', 'J\'adore Infinissime', 'Miss Dior',
-            'Miss Dior Blooming Bouquet', 'Miss Dior Absolutely Blooming',
-            'Eau Sauvage', 'Dior Homme', 'Dior Homme Intense', 'Dior Homme Parfum',
-            'Fahrenheit', 'Hypnotic Poison', 'Pure Poison', 'Joy',
-            
-            // Tom Ford
-            'Tobacco Vanille', 'Oud Wood', 'Oud Wood Intense', 'Lost Cherry',
-            'Bitter Peach', 'Ombré Leather', 'Ombré Leather Parfum', 'Noir Extreme',
-            'Noir de Noir', 'Tuscan Leather', 'Black Orchid', 'Soleil Blanc',
-            'Neroli Portofino', 'Costa Azzurra', 'Fucking Fabulous', 'Jasmin Rouge',
-            
-            // Creed
-            'Aventus', 'Aventus Cologne', 'Aventus for Her', 'Silver Mountain Water',
-            'Green Irish Tweed', 'Millesime Imperial', 'Viking', 'Viking Cologne',
-            'Carmina', 'Original Santal', 'Erolfa', 'Royal Oud',
-            
-            // YSL
-            'La Vie Est Belle', 'Black Opium', 'Black Opium Extreme', 'Black Opium Illicit',
-            'Mon Paris', 'Mon Paris Intensement', 'Libre', 'Libre Intense',
-            'La Nuit de L\'Homme', 'La Nuit de L\'Homme Bleu Electrique', 'L\'Homme',
-            'Y', 'Y EDP', 'Y Le Parfum', 'Opium', 'Kouros',
-            
-            // Thierry Mugler
-            'Angel', 'Angel Muse', 'Angel Nova', 'Angel Fantasm', 'Angel Eau Croisiere',
-            'Angel Innocent', 'Angel Sunessence', 'Angel Liqueur de Parfum',
-            'Alien', 'Alien Essence Absolue', 'Alien Fusion', 'Alien Goddess',
-            'Alien Goddess Intense', 'Alien Flora Futura', 'Alien Eau Extraordinaire',
-            'A*Men', 'A*Men Pure Havane', 'A*Men Pure Malt', 'A*Men Pure Tonka',
-            'A*Men Kryptomint', 'A*Men Ultra Zest', 'Aura', 'Womanity', 'Cologne',
-            'Miroir Miroir', 'Over The Musk',
-            
-            // Viktor & Rolf
-            'Flowerbomb', 'Flowerbomb Bloom', 'Flowerbomb Dew', 'Flowerbomb Midnight',
-            'Spicebomb', 'Spicebomb Extreme', 'Spicebomb Infrared', 'Spicebomb Night Vision',
-            'Bonbon', 'Good Fortune',
-            
-            // Versace
-            'Eros', 'Eros Flame', 'Eros Pour Femme', 'Dylan Blue', 'Dylan Blue Pour Femme',
-            'Dylan Turquoise', 'Crystal Noir', 'Bright Crystal', 'Pour Homme',
-            'The Dreamer', 'Versace Pour Homme Dylan Blue',
-            
-            // Giorgio Armani
-            'Acqua di Gio', 'Acqua di Gio Profumo', 'Acqua di Gio Absolu',
-            'Acqua di Gio Profondo', 'Armani Code', 'Armani Code Absolu',
-            'Armani Code Profumo', 'Si', 'Si Passione', 'Si Intense',
-            'Stronger With You', 'Stronger With You Intensely', 'My Way',
-            
-            // Paco Rabanne
-            'One Million', 'One Million Prive', 'One Million Lucky', 'One Million Parfum',
-            'Invictus', 'Invictus Intense', 'Invictus Legend', 'Invictus Victory',
-            'Phantom', 'Olympea', 'Olympea Intense', 'Lady Million',
-            
-            // Gucci
-            'Guilty', 'Guilty Absolute', 'Guilty Black', 'Guilty Intense',
-            'Bloom', 'Bloom Ambrosia di Fiori', 'Flora', 'Flora Gorgeous Gardenia',
-            'Bamboo', 'Guilty Pour Homme', 'Guilty Love Edition',
-            
-            // Prada
-            'Luna Rossa', 'Luna Rossa Black', 'Luna Rossa Carbon', 'L\'Homme',
-            'L\'Homme Intense', 'Candy', 'Candy Kiss', 'Candy Gloss', 'Infusion d\'Iris',
-            
-            // MFK (Maison Francis Kurkdjian)
-            'Baccarat Rouge 540', 'Baccarat Rouge 540 Extrait', 'Grand Soir',
-            'Oud Satin Mood', 'Oud Satin Mood Extrait', 'Aqua Universalis',
-            'A La Rose', 'Gentle Fluidity Gold', 'Gentle Fluidity Silver',
-            
-            // Parfums de Marly
-            'Delina', 'Delina Exclusif', 'Delina La Rosée', 'Layton', 'Layton Exclusif',
-            'Herod', 'Pegasus', 'Pegasus Exclusif', 'Sedley', 'Percival',
-            'Carlisle', 'Oajan', 'Kalan', 'Greenley', 'Althair',
-            
-            // Byredo
-            'Gypsy Water', 'Bal d\'Afrique', 'Mojave Ghost', 'Blanche', 'Pulp',
-            'Super Cedar', 'Black Saffron', 'Bibliothèque', 'La Tulipe',
-            
-            // Le Labo
-            'Santal 33', 'Another 13', 'The Noir 29', 'Rose 31', 'Bergamote 22',
-            'Neroli 36', 'Jasmin 17', 'Tonka 25',
-            
-            // Montale & Mancera
-            'Black Aoud', 'Intense Cafe', 'Roses Musk', 'Chocolate Greedy',
-            'Red Aoud', 'Aoud Lime', 'Cedrat Boise', 'Red Tobacco', 'Roses Vanille',
-            
-            // Niche Turkish/Middle Eastern Brands
-            'Instant Crush', 'Cedrat Boise', 'Red Tobacco', 'Aoud Lemon Mint',
-            'Hindu Kush', 'Sicily', 'Blue Amber', 'Vanille Absolu',
-            
-            // Carolina Herrera
-            'Good Girl', 'Good Girl Supreme', 'Very Good Girl', 'Bad Boy',
-            'Bad Boy Cobalt', '212', '212 VIP', 'CH Men Prive',
-            
-            // Lancôme
-            'La Vie Est Belle', 'La Vie Est Belle Intensement', 'Idôle',
-            'Trésor', 'Hypnôse', 'Miracle',
-            
-            // Burberry
-            'Burberry Her', 'Burberry Her Intense', 'Burberry London',
-            'Burberry Brit', 'Mr. Burberry', 'Mr. Burberry Indigo',
-            
-            // Dolce & Gabbana
-            'The One', 'The One EDP', 'Light Blue', 'Light Blue Intense',
-            'Light Blue Pour Homme', 'K by Dolce & Gabbana', 'Dolce',
-            
-            // Calvin Klein
-            'CK One', 'CK Be', 'Euphoria', 'Obsession', 'Eternity',
-            
-            // Hugo Boss
-            'Boss Bottled', 'Boss Bottled Intense', 'The Scent', 'The Scent Intense',
-            
-            // Jo Malone
-            'Wood Sage & Sea Salt', 'English Pear & Freesia', 'Lime Basil & Mandarin',
-            'Peony & Blush Suede', 'Myrrh & Tonka', 'Oud & Bergamot',
-            
-            // Amouage
-            'Interlude Man', 'Interlude Woman', 'Reflection Man', 'Reflection Woman',
-            'Jubilation XXV', 'Jubilation 25', 'Gold Man', 'Gold Woman',
-            'Memoir Man', 'Memoir Woman', 'Epic Man', 'Epic Woman',
-            
-            // Xerjoff
-            'Naxos', 'Alexandria II', 'Erba Pura', 'Accento', 'Comandante',
-            'Cruz del Sur II', 'Italica', 'Allende', 'Renaissance',
-            
-            // Roja Dove
-            'Elysium', 'Elysium Pour Homme Parfum Cologne', 'Enigma',
-            'Danger Pour Homme', 'Creation-E', 'Amber Aoud', 'Oceania',
-            
-            // Kilian
-            'Angels Share', 'Good Girl Gone Bad', 'Love Don\'t Be Shy',
-            'Black Phantom', 'Straight to Heaven', 'Moonlight in Heaven',
-            'Dark Lord', 'Rolling in Love', 'Intoxicated',
-            
-            // Initio
-            'Oud for Greatness', 'Psychedelic Love', 'Side Effect', 'Blessed Baraka',
-            'Absolute Aphrodisiac', 'Rehab', 'Magnetic Blend 7',
-            
-            // Penhaligon\'s
-            'Halfeti', 'The Tragedy of Lord George', 'Empressa', 'Juniper Sling',
-            'Blenheim Bouquet', 'Endymion', 'Portraits Collection',
-            
-            // Hermes
-            'Terre d\'Hermès', 'Terre d\'Hermès Eau Intense Vetiver', 'Terre d\'Hermès Parfum',
-            'Twilly d\'Hermès', 'H24', 'Voyage d\'Hermès', 'Eau des Merveilles',
-            
-            // Givenchy
-            'Gentleman', 'Gentleman Reserve Privee', 'Gentleman EDP', 'Gentleman Cologne',
-            'L\'Interdit', 'L\'Interdit Intense', 'Irresistible', 'Very Irresistible',
-            'Pi', 'Ysatis', 'Amarige',
-            
-            // Valentino
-            'Uomo Intense', 'Uomo Born in Roma', 'Donna Born in Roma',
-            'Voce Viva', 'Valentina', 'Valentino Noir Absolu',
-            
-            // Narciso Rodriguez
-            'For Her', 'For Her EDP', 'For Her Fleur Musc', 'For Him',
-            'Musc Noir', 'Poudree', 'Rouge', 'Cristal',
-            
-            // Marc Jacobs
-            'Daisy', 'Daisy Love', 'Daisy Eau So Fresh', 'Perfect',
-            'Decadence', 'Divine Decadence', 'Dot',
-            
-            // Estée Lauder
-            'Beautiful', 'Youth Dew', 'Pleasures', 'Knowing',
-            'Modern Muse', 'Bronze Goddess',
-            
-            // Jean Paul Gaultier
-            'Le Male', 'Le Male Le Parfum', 'Ultra Male', 'Scandal',
-            'Scandal Pour Homme', 'La Belle', 'Classique', 'Kokorico',
-            
-            // Atelier Cologne
-            'Orange Sanguine', 'Pacific Lime', 'Vanille Insensée',
-            'Oud Saphir', 'Silver Iris', 'Cedre Atlas',
-            
-            // Acqua di Parma
-            'Colonia', 'Colonia Essenza', 'Colonia Oud', 'Fico di Amalfi',
-            'Blu Mediterraneo', 'Quercia', 'Leather',
-            
-            // Nishane
-            'Ani', 'Hacivat', 'Hundred Silent Ways', 'Fan Your Flames',
-            'Wulong Cha', 'Sultan Vetiver', 'B-612',
-            
-            // Other Popular & Niche
-            'Portrait of a Lady', 'Ombre Nomade', 'Interlude Man', 'Royal Princess Oud',
-            'Orpheon', 'Jazz Club', 'Under the Lemon Trees', 'Beach Walk',
-            'At the Barbers', 'Tobacco Oud', 'Rose of No Man\'s Land',
-            'Matcha Meditation', 'Sel Marin', 'When the Rain Stops',
-            'Feve Delicieuse', 'Philosykos', 'Tam Dao', 'Do Son',
-            'Shalimar', 'Mitsouko', 'L\'Heure Bleue', 'Jicky'
-        ];
-        
-        // Get all unique perfume names from both lists
-        const bottlePerfumes = [...new Set(this.perfumes.map(p => p.name))];
-        const decantPerfumes = [...new Set(this.decants.map(p => p.name))];
-        
-        // Combine and sort
-        return [...new Set([...popularPerfumes, ...bottlePerfumes, ...decantPerfumes])].sort();
+        return this.perfumes.map(perfume => perfume.name);
     }
 
     setupAutocomplete() {
