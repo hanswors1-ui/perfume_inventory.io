@@ -17,6 +17,7 @@
                 <div class="language-switcher">
                     <button class="lang-btn active" data-lang="en">🇬🇧 EN</button>
                     <button class="lang-btn" data-lang="pl">🇵🇱 PL</button>
+                    <button id="darkModeToggle" class="dark-mode-btn" title="Toggle dark mode">🌙</button>
                 </div>
             </div>
         </header>
@@ -187,6 +188,25 @@
 
             <div id="inventoryTable"></div>
         </div>
+
+        <!-- Floating Action Button -->
+        <button id="fabButton" class="fab" title="Quick add perfume" data-i18n="addNewPerfume">+</button>
+
+        <!-- Bottom Sheet Modal for Editing -->
+        <div id="bottomSheet" class="bottom-sheet">
+            <div class="bottom-sheet-handle"></div>
+            <div class="bottom-sheet-content">
+                <h2 id="bottomSheetTitle" data-i18n="editPerfume">Edit Perfume</h2>
+                <div id="bottomSheetBody"></div>
+                <div class="bottom-sheet-actions">
+                    <button id="bottomSheetClose" class="btn btn-secondary" data-i18n="cancel">Cancel</button>
+                    <button id="bottomSheetSave" class="btn btn-primary" data-i18n="save">Save</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Sheet Overlay -->
+        <div id="bottomSheetOverlay" class="bottom-sheet-overlay"></div>
     </div>
 
     <script src="app.js"></script>

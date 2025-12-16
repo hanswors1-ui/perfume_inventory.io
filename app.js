@@ -224,6 +224,8 @@ class PerfumeInventory {
         this.setupViewSwitcher();
         this.setupSortControls();
         this.setupStatCardFilters();
+        this.setupDarkMode();
+        this.setupMobileUI();
         updatePageLanguage();
         
         // Load perfumes from API after initialization
@@ -709,6 +711,136 @@ class PerfumeInventory {
         } else {
             batchCodeGroup.style.display = 'block';
             productionDateGroup.style.display = 'block';
+        }
+    }
+
+    setupDarkMode() {
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        
+        // Load dark mode preference from localStorage
+        const isDarkMode = localStorage.getItem('darkMode') === 'true';
+        
+        // Apply dark mode on page load if enabled
+        if (isDarkMode) {
+            document.body.classList.add('dark-mode');
+        }
+        
+        // Add click listener to toggle button
+        if (darkModeToggle) {
+            darkModeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                const isDarkNow = document.body.classList.contains('dark-mode');
+                localStorage.setItem('darkMode', isDarkNow);
+            });
+        }
+    }
+
+    setupMobileUI() {
+        const fabButton = document.getElementById('fabButton');
+        const bottomSheet = document.getElementById('bottomSheet');
+        const bottomSheetOverlay = document.getElementById('bottomSheetOverlay');
+        const bottomSheetClose = document.getElementById('bottomSheetClose');
+
+        // FAB click handler - scroll to top and focus form
+        if (fabButton) {
+            fabButton.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                document.getElementById('perfumeName').focus();
+            });
+        }
+
+        // Bottom sheet close handlers
+        if (bottomSheetClose) {
+            bottomSheetClose.addEventListener('click', () => {
+                this.closeBottomSheet();
+            });
+        }
+
+        if (bottomSheetOverlay) {
+            bottomSheetOverlay.addEventListener('click', () => {
+                this.closeBottomSheet();
+            });
+        }
+
+        // Swipe detection for status changes
+        this.setupSwipeGestures();
+    }
+
+    setupSwipeGestures() {
+        let touchStartX = 0;
+        let touchEndX = 0;
+        const swipeThreshold = 50; // pixels
+
+        document.addEventListener('touchstart', (e) => {
+            const card = e.target.closest('.perfume-card');
+            if (card) {
+                touchStartX = e.changedTouches[0].screenX;
+            }
+        }, false);
+
+        document.addEventListener('touchend', (e) => {
+            const card = e.target.closest('.perfume-card');
+            if (card) {
+                touchEndX = e.changedTouches[0].screenX;
+                this.handleSwipe(card, touchStartX, touchEndX, swipeThreshold);
+            }
+        }, false);
+    }
+
+    handleSwipe(card, startX, endX, threshold) {
+        const difference = startX - endX;
+        const perfumeId = parseInt(card.dataset.perfumeId);
+
+        // Swipe left - change status forward
+        if (difference > threshold) {
+            this.cycleStatus(perfumeId, 'forward');
+        }
+        // Swipe right - change status backward
+        else if (difference < -threshold) {
+            this.cycleStatus(perfumeId, 'backward');
+        }
+    }
+
+    cycleStatus(perfumeId, direction) {
+        const statuses = ['owned', 'want-to-get', 'want-to-try', 'for-sale', 'sold'];
+        const list = currentView === 'bottles' ? this.perfumes : this.decants;
+        const perfume = list.find(p => p.id === perfumeId);
+
+        if (perfume) {
+            const currentIndex = statuses.indexOf(perfume.status || 'owned');
+            let newIndex;
+
+            if (direction === 'forward') {
+                newIndex = (currentIndex + 1) % statuses.length;
+            } else {
+                newIndex = (currentIndex - 1 + statuses.length) % statuses.length;
+            }
+
+            perfume.status = statuses[newIndex];
+            this.saveToLocalStorage();
+            this.renderInventory();
+            this.updateStats();
+            this.showToast(`Status changed to ${this.getStatusLabel(perfume.status)}`);
+        }
+    }
+
+    openBottomSheet(perfume = null) {
+        const bottomSheet = document.getElementById('bottomSheet');
+        const bottomSheetOverlay = document.getElementById('bottomSheetOverlay');
+
+        if (bottomSheet && bottomSheetOverlay) {
+            bottomSheet.classList.add('active');
+            bottomSheetOverlay.classList.add('active');
+        }
+    }
+
+    closeBottomSheet() {
+        const bottomSheet = document.getElementById('bottomSheet');
+        const bottomSheetOverlay = document.getElementById('bottomSheetOverlay');
+
+        if (bottomSheet && bottomSheetOverlay) {
+            bottomSheet.classList.remove('active');
+            bottomSheetOverlay.classList.remove('active');
         }
     }
 
