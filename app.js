@@ -716,9 +716,11 @@ class PerfumeInventory {
 
     setupDarkMode() {
         const darkModeToggle = document.getElementById('darkModeToggle');
+        console.log('Dark mode button found:', darkModeToggle);
         
         // Load dark mode preference from localStorage
         const isDarkMode = localStorage.getItem('darkMode') === 'true';
+        console.log('Dark mode enabled from storage:', isDarkMode);
         
         // Apply dark mode on page load if enabled
         if (isDarkMode) {
@@ -727,11 +729,23 @@ class PerfumeInventory {
         
         // Add click listener to toggle button
         if (darkModeToggle) {
-            darkModeToggle.addEventListener('click', () => {
+            const toggleHandler = () => {
+                console.log('Dark mode toggle clicked!');
+                const isDark = document.body.classList.contains('dark-mode');
+                console.log('Current dark mode state:', isDark);
+                
                 document.body.classList.toggle('dark-mode');
                 const isDarkNow = document.body.classList.contains('dark-mode');
+                console.log('New dark mode state:', isDarkNow);
+                
                 localStorage.setItem('darkMode', isDarkNow);
-            });
+            };
+            
+            darkModeToggle.addEventListener('click', toggleHandler);
+            darkModeToggle.style.cursor = 'pointer';
+            console.log('Dark mode event listener attached');
+        } else {
+            console.warn('Dark mode toggle button not found!');
         }
     }
 
@@ -1757,5 +1771,11 @@ class PerfumeInventory {
     }
 }
 
-// Initialize the inventory system
-const inventory = new PerfumeInventory();
+// Initialize the inventory system when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        const inventory = new PerfumeInventory();
+    });
+} else {
+    const inventory = new PerfumeInventory();
+}
