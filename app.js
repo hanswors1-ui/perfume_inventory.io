@@ -324,8 +324,13 @@ class PerfumeInventory {
                 div.addEventListener('click', () => {
                     input.value = item;
                     list.innerHTML = '';
-                    // Update perfume suggestions when brand is selected
-                    this.updatePerfumeSuggestions();
+                    // When brand is selected, trigger input on perfume field to show filtered suggestions
+                    const perfumeInput = document.getElementById('perfumeName');
+                    if (perfumeInput) {
+                        perfumeInput.focus();
+                        // Trigger input event to show perfume suggestions for this brand
+                        perfumeInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
                 });
                 
                 list.appendChild(div);
@@ -356,9 +361,11 @@ class PerfumeInventory {
             const freshAllPerfumes = this.getAllKnownPerfumeNames();
             const perfumesForBrand = freshKnownPerfumes[brand] || [];
             
-            // Combine brand-specific perfumes with all known perfumes
-            // Prioritize brand-specific ones
-            const allSuggestions = [...new Set([...perfumesForBrand, ...freshAllPerfumes])];
+            // If a brand is selected, only show perfumes from that brand
+            // Otherwise show all perfumes
+            const allSuggestions = brand && perfumesForBrand.length > 0 
+                ? perfumesForBrand 
+                : [...new Set([...perfumesForBrand, ...freshAllPerfumes])];
             
             // Filter and display suggestions
             const filtered = allSuggestions.filter(item => 
@@ -378,6 +385,15 @@ class PerfumeInventory {
                 div.addEventListener('click', () => {
                     input.value = item;
                     list.innerHTML = '';
+                    // When perfume is selected, auto-populate the brand if not already set
+                    const brandInput = document.getElementById('brand');
+                    if (brandInput && !brandInput.value) {
+                        // Find the brand for this perfume from the catalog
+                        const perfumeEntry = this.perfumeCatalog.find(p => p.name === item);
+                        if (perfumeEntry && perfumeEntry.brand) {
+                            brandInput.value = perfumeEntry.brand;
+                        }
+                    }
                 });
                 
                 list.appendChild(div);
