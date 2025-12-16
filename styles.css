@@ -336,6 +336,63 @@ header h1 {
     border-color: #667eea;
 }
 
+.sort-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin: 20px 0;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sort-controls label {
+    font-weight: 500;
+    color: #333;
+}
+
+.sort-controls select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: white;
+    font-size: 0.95em;
+    cursor: pointer;
+    transition: border-color 0.3s;
+}
+
+.sort-controls select:hover {
+    border-color: #667eea;
+}
+
+.sort-controls select:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+}
+
+.sort-toggle {
+    padding: 8px 12px;
+    background-color: #667eea;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    min-width: 45px;
+}
+
+.sort-toggle:hover {
+    background-color: #764ba2;
+}
+
+.sort-toggle.reversed {
+    background-color: #764ba2;
+}
+
 .stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -349,6 +406,7 @@ header h1 {
     padding: 20px;
     border-radius: 10px;
     text-align: center;
+    transition: all 0.3s ease;
 }
 
 .stat-card h3 {
@@ -359,6 +417,12 @@ header h1 {
 .stat-card p {
     font-size: 0.9em;
     opacity: 0.9;
+}
+
+.stat-card.active-filter {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    box-shadow: 0 8px 20px rgba(245, 87, 108, 0.4);
+    transform: scale(1.05);
 }
 
 .inventory-table {

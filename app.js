@@ -186,6 +186,13 @@ class PerfumeInventory {
         this.knownPerfumes = {};
         this.allKnownPerfumeNames = [];
         
+        // Sort state
+        this.sortBy = localStorage.getItem('sortBy') || 'name';
+        this.sortReversed = localStorage.getItem('sortReversed') === 'true';
+        
+        // Filter state
+        this.filterStatus = localStorage.getItem('filterStatus') || null;
+        
         this.init();
     }
 
@@ -215,6 +222,8 @@ class PerfumeInventory {
         this.setupEventListeners();
         this.setupLanguageSwitcher();
         this.setupViewSwitcher();
+        this.setupSortControls();
+        this.setupStatCardFilters();
         updatePageLanguage();
         
         // Load perfumes from API after initialization
@@ -563,6 +572,104 @@ class PerfumeInventory {
         });
     }
 
+    setupSortControls() {
+        const sortBySelect = document.getElementById('sortBy');
+        const sortOrderBtn = document.getElementById('sortOrder');
+
+        if (sortBySelect) {
+            sortBySelect.addEventListener('change', (e) => {
+                this.sortBy = e.target.value;
+                localStorage.setItem('sortBy', this.sortBy);
+                this.renderInventory();
+            });
+            // Set current value from this.sortBy
+            sortBySelect.value = this.sortBy;
+        }
+
+        if (sortOrderBtn) {
+            sortOrderBtn.addEventListener('click', () => {
+                this.sortReversed = !this.sortReversed;
+                localStorage.setItem('sortReversed', this.sortReversed);
+                // Update button visual state
+                if (this.sortReversed) {
+                    sortOrderBtn.classList.add('reversed');
+                } else {
+                    sortOrderBtn.classList.remove('reversed');
+                }
+                this.renderInventory();
+            });
+            // Set initial button state
+            if (this.sortReversed) {
+                sortOrderBtn.classList.add('reversed');
+            }
+        }
+    }
+
+    setupStatCardFilters() {
+        const statCards = document.querySelectorAll('.stat-card');
+        statCards.forEach((card, index) => {
+            // Skip the first 3 cards (totalItems, totalBrands, totalQuantity)
+            if (index < 3) return;
+
+            const statusMap = {
+                3: 'owned',
+                4: 'want-to-get',
+                5: 'want-to-try',
+                6: 'for-sale',
+                7: 'sold'
+            };
+
+            const status = statusMap[index];
+            if (!status) return;
+
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', () => {
+                // Toggle filter: if clicking the same filter, clear it
+                if (this.filterStatus === status) {
+                    this.filterStatus = null;
+                } else {
+                    this.filterStatus = status;
+                }
+
+                // Save to localStorage
+                if (this.filterStatus) {
+                    localStorage.setItem('filterStatus', this.filterStatus);
+                } else {
+                    localStorage.removeItem('filterStatus');
+                }
+
+                // Update visual state of all cards
+                this.updateStatCardVisualState();
+                
+                // Re-render inventory
+                this.renderInventory();
+            });
+        });
+
+        // Set initial visual state
+        this.updateStatCardVisualState();
+    }
+
+    updateStatCardVisualState() {
+        const statCards = document.querySelectorAll('.stat-card');
+        const statusMap = {
+            3: 'owned',
+            4: 'want-to-get',
+            5: 'want-to-try',
+            6: 'for-sale',
+            7: 'sold'
+        };
+
+        statCards.forEach((card, index) => {
+            const status = statusMap[index];
+            if (this.filterStatus === status) {
+                card.classList.add('active-filter');
+            } else {
+                card.classList.remove('active-filter');
+            }
+        });
+    }
+
     setupViewSwitcher() {
         document.querySelectorAll('.view-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -847,9 +954,78 @@ class PerfumeInventory {
         }
     }
 
+    sortPerfumes(perfumesArray) {
+        if (!perfumesArray || perfumesArray.length === 0) {
+            return perfumesArray;
+        }
+
+        const sortedArray = [...perfumesArray]; // Create a copy to avoid mutations
+
+        const sortField = this.sortBy || 'name';
+        const isReversed = this.sortReversed || false;
+
+        sortedArray.sort((a, b) => {
+            let compareA, compareB;
+
+            switch (sortField) {
+                case 'name':
+                    compareA = (a.name || '').toLowerCase();
+                    compareB = (b.name || '').toLowerCase();
+                    break;
+                case 'brand':
+                    compareA = (a.brand || '').toLowerCase();
+                    compareB = (b.brand || '').toLowerCase();
+                    break;
+                case 'dateAdded':
+                    compareA = a.dateAdded ? new Date(a.dateAdded).getTime() : 0;
+                    compareB = b.dateAdded ? new Date(b.dateAdded).getTime() : 0;
+                    break;
+                case 'productionDate':
+                    compareA = a.productionDate ? new Date(a.productionDate).getTime() : 0;
+                    compareB = b.productionDate ? new Date(b.productionDate).getTime() : 0;
+                    break;
+                case 'status':
+                    compareA = (a.status || 'owned').toLowerCase();
+                    compareB = (b.status || 'owned').toLowerCase();
+                    break;
+                case 'concentration':
+                    compareA = (a.concentration || 'edp').toLowerCase();
+                    compareB = (b.concentration || 'edp').toLowerCase();
+                    break;
+                case 'size':
+                    compareA = parseFloat(a.size) || 0;
+                    compareB = parseFloat(b.size) || 0;
+                    break;
+                default:
+                    compareA = (a.name || '').toLowerCase();
+                    compareB = (b.name || '').toLowerCase();
+            }
+
+            // Handle comparison
+            if (compareA < compareB) {
+                return isReversed ? 1 : -1;
+            } else if (compareA > compareB) {
+                return isReversed ? -1 : 1;
+            }
+            return 0;
+        });
+
+        return sortedArray;
+    }
+
     renderInventory(perfumesToRender = null) {
         if (!perfumesToRender) {
             perfumesToRender = this.getCurrentList();
+        }
+        
+        // Apply status filter if set
+        if (this.filterStatus && perfumesToRender === this.getCurrentList()) {
+            perfumesToRender = perfumesToRender.filter(p => p.status === this.filterStatus);
+        }
+        
+        // Apply sorting if displaying full inventory
+        if (perfumesToRender === this.getCurrentList()) {
+            perfumesToRender = this.sortPerfumes(perfumesToRender);
         }
         
         const container = document.getElementById('inventoryTable');

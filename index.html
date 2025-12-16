@@ -171,6 +171,20 @@
                 </div>
             </div>
 
+            <div class="sort-controls">
+                <label for="sortBy" data-i18n="sortBy">Sort by:</label>
+                <select id="sortBy">
+                    <option value="name" data-i18n="sortByName">Name (A-Z)</option>
+                    <option value="brand" data-i18n="sortByBrand">Brand (A-Z)</option>
+                    <option value="dateAdded" data-i18n="sortByDateAdded">Date Added (Newest)</option>
+                    <option value="productionDate" data-i18n="sortByProductionDate">Production Date (Newest)</option>
+                    <option value="status" data-i18n="sortByStatus">Status</option>
+                    <option value="concentration" data-i18n="sortByConcentration">Concentration</option>
+                    <option value="size" data-i18n="sortBySize">Size (Large to Small)</option>
+                </select>
+                <button id="sortOrder" class="sort-toggle" title="Click to reverse sort order" data-i18n="sortAscending">↑</button>
+            </div>
+
             <div id="inventoryTable"></div>
         </div>
     </div>
