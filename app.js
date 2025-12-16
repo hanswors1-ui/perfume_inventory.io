@@ -1159,6 +1159,59 @@ class PerfumeInventory {
         return sortedArray;
     }
 
+    renderInventoryCards(perfumesToRender) {
+        const container = document.getElementById('inventoryTable');
+        
+        if (perfumesToRender.length === 0) {
+            const itemType = currentView === 'bottles' ? 'bottles' : 'decants';
+            container.innerHTML = `<div class="no-data">No ${itemType} in inventory. Add your first ${itemType.slice(0, -1)} above!</div>`;
+            return;
+        }
+
+        const cardsHTML = `
+            <div class="inventory-cards">
+                ${perfumesToRender.map(perfume => {
+                    const status = perfume.status || 'owned';
+                    return `
+                    <div class="perfume-card" data-perfumeId="${perfume.id}">
+                        <div class="perfume-card-header">
+                            <div>
+                                <div class="perfume-card-name">${perfume.name}</div>
+                                <div class="perfume-card-brand">${perfume.brand}</div>
+                            </div>
+                            <span class="perfume-card-status status-${status}" data-i18n="status${status.charAt(0).toUpperCase() + status.slice(1).replace(/-/g, '')}">${this.getStatusLabel(status)}</span>
+                        </div>
+                        <div class="perfume-card-info">
+                            <div class="perfume-card-info-item">
+                                <span class="perfume-card-info-label" data-i18n="concentration">Concentration</span>
+                                <span class="perfume-card-info-value">${this.getConcentrationLabel(perfume.concentration)}</span>
+                            </div>
+                            <div class="perfume-card-info-item">
+                                <span class="perfume-card-info-label" data-i18n="quantity">Quantity</span>
+                                <span class="perfume-card-info-value">${perfume.quantity || 'N/A'}</span>
+                            </div>
+                            <div class="perfume-card-info-item">
+                                <span class="perfume-card-info-label" data-i18n="size">Size (ml)</span>
+                                <span class="perfume-card-info-value">${perfume.size || 'N/A'}</span>
+                            </div>
+                            <div class="perfume-card-info-item">
+                                <span class="perfume-card-info-label" data-i18n="productionDate">Production Date</span>
+                                <span class="perfume-card-info-value">${perfume.productionDate || 'N/A'}</span>
+                            </div>
+                        </div>
+                        <div class="perfume-card-actions">
+                            <button onclick="inventory.openBottomSheet(${perfume.id})" class="edit-btn" data-i18n="edit">Edit</button>
+                            <button onclick="inventory.deletePerfume(${perfume.id})" class="delete-btn" data-i18n="delete">Delete</button>
+                        </div>
+                    </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+        
+        container.innerHTML = cardsHTML;
+    }
+
     renderInventory(perfumesToRender = null) {
         if (!perfumesToRender) {
             perfumesToRender = this.getCurrentList();
@@ -1174,6 +1227,18 @@ class PerfumeInventory {
             perfumesToRender = this.sortPerfumes(perfumesToRender);
         }
         
+        // Check if mobile viewport (less than 768px)
+        const isMobileView = window.innerWidth < 768;
+        
+        // Render cards on mobile, table on desktop
+        if (isMobileView) {
+            this.renderInventoryCards(perfumesToRender);
+        } else {
+            this.renderInventoryTable(perfumesToRender);
+        }
+    }
+
+    renderInventoryTable(perfumesToRender) {
         const container = document.getElementById('inventoryTable');
         
         if (perfumesToRender.length === 0) {

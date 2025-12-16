@@ -1424,6 +1424,8 @@ body.dark-mode .perfume-card-actions button.delete {
         right: 20px;
         width: 56px;
         height: 56px;
+        position: fixed;
+        z-index: 9999;
     }
 
     /* Mobile card view */
