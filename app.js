@@ -1159,6 +1159,33 @@ class PerfumeInventory {
         return sortedArray;
     }
 
+    renderInventory(perfumesToRender = null) {
+        if (!perfumesToRender) {
+            perfumesToRender = this.getCurrentList();
+        }
+        
+        // Apply status filter if set
+        if (this.filterStatus && perfumesToRender === this.getCurrentList()) {
+            perfumesToRender = perfumesToRender.filter(p => p.status === this.filterStatus);
+        }
+        
+        // Apply sorting if displaying full inventory
+        if (perfumesToRender === this.getCurrentList()) {
+            perfumesToRender = this.sortPerfumes(perfumesToRender);
+        }
+        
+        // Check if mobile viewport (less than 768px)
+        const isMobileView = window.innerWidth < 768;
+        
+        // Render cards on mobile, table on desktop
+        if (isMobileView) {
+            this.renderInventoryCards(perfumesToRender);
+        } else {
+            this.renderInventoryTable(perfumesToRender);
+        }
+    }
+
+    
     renderInventoryCards(perfumesToRender) {
         const container = document.getElementById('inventoryTable');
         
@@ -1210,32 +1237,6 @@ class PerfumeInventory {
         `;
         
         container.innerHTML = cardsHTML;
-    }
-
-    renderInventory(perfumesToRender = null) {
-        if (!perfumesToRender) {
-            perfumesToRender = this.getCurrentList();
-        }
-        
-        // Apply status filter if set
-        if (this.filterStatus && perfumesToRender === this.getCurrentList()) {
-            perfumesToRender = perfumesToRender.filter(p => p.status === this.filterStatus);
-        }
-        
-        // Apply sorting if displaying full inventory
-        if (perfumesToRender === this.getCurrentList()) {
-            perfumesToRender = this.sortPerfumes(perfumesToRender);
-        }
-        
-        // Check if mobile viewport (less than 768px)
-        const isMobileView = window.innerWidth < 768;
-        
-        // Render cards on mobile, table on desktop
-        if (isMobileView) {
-            this.renderInventoryCards(perfumesToRender);
-        } else {
-            this.renderInventoryTable(perfumesToRender);
-        }
     }
 
     renderInventoryTable(perfumesToRender) {
