@@ -1298,6 +1298,7 @@ class PerfumeInventory {
                                     </span>
                                     <div class="status-actions">
                                         <select class="status-select" onchange="inventory.updateStatus(${perfume.id}, this.value)" value="${status}">
+                                            <option value="totalitems" ${status === 'totalitems' ? 'selected' : ''}>${translate('totalitems')}</option>
                                             <option value="owned" ${status === 'owned' ? 'selected' : ''}>${translate('statusOwned')}</option>
                                             <option value="want-to-get" ${status === 'want-to-get' ? 'selected' : ''}>${translate('statusWantToGet')}</option>
                                             <option value="want-to-try" ${status === 'want-to-try' ? 'selected' : ''}>${translate('statusWantToTry')}</option>
