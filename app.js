@@ -1227,8 +1227,8 @@ class PerfumeInventory {
                             </div>
                         </div>
                         <div class="perfume-card-actions">
-                            <button onclick="inventory.openBottomSheet(${perfume.id})" class="edit-btn" data-i18n="edit">Edit</button>
-                            <button onclick="inventory.deletePerfume(${perfume.id})" class="delete-btn" data-i18n="delete">Delete</button>
+                            <button onclick="inventory.openBottomSheet(${perfume.id})" class="edit-btn" data-i18n="edit">${translate('edit')}</button>
+                            <button onclick="inventory.deletePerfume(${perfume.id})" class="delete-btn" data-i18n="delete">${translate('delete')}</button>
                         </div>
                     </div>
                     `;
