@@ -63,7 +63,8 @@ const translations = {
         tablePersonalNotes: "Personal Notes",
         tableActions: "Actions",
         tableConcentration: "Type",
-        deleteButton: "Delete"
+        deleteButton: "Delete",
+        editButton: "Edit"
     },
     pl: {
         title: "🌸 System Inwentaryzacji Perfum",
@@ -126,7 +127,8 @@ const translations = {
         tablePersonalNotes: "Notatki Osobiste",
         tableActions: "Akcje",
         tableConcentration: "Typ",
-        deleteButton: "Usuń"
+        deleteButton: "Usuń",
+        editButton: "Edytuj"
     }
 };
 
@@ -1100,6 +1102,15 @@ class PerfumeInventory {
         }
     }
 
+    editPerfume(id) {
+        const currentList = this.getCurrentList();
+        const perfume = currentList.find(p => p.id === id);
+        if (perfume) {
+            this.openBottomSheet(perfume);
+        }
+
+    }
+
     sortPerfumes(perfumesArray) {
         if (!perfumesArray || perfumesArray.length === 0) {
             return perfumesArray;
@@ -1227,8 +1238,8 @@ class PerfumeInventory {
                             </div>
                         </div>
                         <div class="perfume-card-actions">
-                            <button onclick="inventory.openBottomSheet(${perfume.id})" class="edit-btn" data-i18n="edit">${translate('edit')}</button>
-                            <button onclick="inventory.deletePerfume(${perfume.id})" class="delete-btn" data-i18n="delete">${translate('delete')}</button>
+                            <button onclick="inventory.editPerfume(${perfume.id})" class="edit-btn" data-i18n="edit">${translate('editButton')}</button>
+                            <button onclick="inventory.deletePerfume(${perfume.id})" class="delete-btn" data-i18n="delete">${translate('deleteButton')}</button>
                         </div>
                     </div>
                     `;
