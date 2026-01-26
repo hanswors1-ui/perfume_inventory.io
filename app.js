@@ -177,10 +177,16 @@ const translations = {
         editQuantity: "Edytuj Ilość",
         editStatus: "Edytuj Status",
         editNotes: "Edytuj Notatki"
-    }
-};
+// Make translations available globally for extensions
+window.translations = translations;
+window.currentLanguage = currentLanguage;
+window.translate = translate;
 
-let currentLanguage = localStorage.getItem('preferredLanguage') || 'en';
+// Ensure currentLanguage is valid
+if (!translations[currentLanguage]) {
+    currentLanguage = 'en';
+    localStorage.setItem('preferredLanguage', 'en');
+}
 
 function translate(key) {
     return translations[currentLanguage][key] || translations.en[key] || key;
@@ -692,11 +698,6 @@ class PerfumeInventory {
             const checked = document.querySelectorAll('.item-checkbox:checked');
             const select = checked.length === all.length;
             all.forEach(cb => cb.checked = !select);
-            this.updateBulkActions();
-        });
-
-        document.getElementById('selectAllTable').addEventListener('change', (e) => {
-            document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = e.target.checked);
             this.updateBulkActions();
         });
 
@@ -1640,6 +1641,15 @@ class PerfumeInventory {
         `;
 
         container.innerHTML = table;
+
+        // Setup event listener for select all checkbox in table header
+        const selectAllTable = document.getElementById('selectAllTable');
+        if (selectAllTable) {
+            selectAllTable.addEventListener('change', (e) => {
+                document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = e.target.checked);
+                this.updateBulkActions();
+            });
+        }
     }
 
     searchInventory(query) {
