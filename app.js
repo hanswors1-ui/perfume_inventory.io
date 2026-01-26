@@ -195,6 +195,8 @@ class PerfumeInventory {
         // Filter state
         this.filterStatus = localStorage.getItem('filterStatus') || null;
         
+        this.showAll = false;
+        
         this.init();
     }
 
@@ -237,7 +239,7 @@ class PerfumeInventory {
     }
 
     getCurrentList() {
-        return currentView === 'bottles' ? this.perfumes : this.decants;
+        return this.showAll ? [...this.perfumes, ...this.decants] : (currentView === 'bottles' ? this.perfumes : this.decants);
     }
 
     getKnownPerfumes() {
@@ -612,8 +614,22 @@ class PerfumeInventory {
     setupStatCardFilters() {
         const statCards = document.querySelectorAll('.stat-card');
         statCards.forEach((card, index) => {
-            // Skip the first 3 cards (totalItems, totalBrands, totalQuantity)
-            if (index < 3) return;
+            // Skip the middle 2 cards (totalBrands, totalQuantity)
+            if (index > 0 && index < 3) return;
+
+            if (index === 0) {
+                // Total Items - show all perfumes
+                card.style.cursor = 'pointer';
+                card.addEventListener('click', () => {
+                    this.showAll = true;
+                    this.filterStatus = null;
+                    localStorage.removeItem('filterStatus');
+                    this.updateStatCardVisualState();
+                    this.renderInventory();
+                    this.updateStats();
+                });
+                return;
+            }
 
             const statusMap = {
                 3: 'owned',
@@ -634,6 +650,8 @@ class PerfumeInventory {
                 } else {
                     this.filterStatus = status;
                 }
+
+                this.showAll = false;
 
                 // Save to localStorage
                 if (this.filterStatus) {
@@ -665,6 +683,15 @@ class PerfumeInventory {
         };
 
         statCards.forEach((card, index) => {
+            if (index === 0) {
+                if (this.showAll) {
+                    card.classList.add('active-filter');
+                } else {
+                    card.classList.remove('active-filter');
+                }
+                return;
+            }
+            
             const status = statusMap[index];
             if (this.filterStatus === status) {
                 card.classList.add('active-filter');
@@ -686,6 +713,8 @@ class PerfumeInventory {
     switchView(view) {
         currentView = view;
         localStorage.setItem('currentView', view);
+        
+        this.showAll = false;
         
         // Update active button
         document.querySelectorAll('.view-btn').forEach(btn => {
@@ -756,6 +785,7 @@ class PerfumeInventory {
         const bottomSheet = document.getElementById('bottomSheet');
         const bottomSheetOverlay = document.getElementById('bottomSheetOverlay');
         const bottomSheetClose = document.getElementById('bottomSheetClose');
+        
 
         // FAB click handler - scroll to top and focus form
         if (fabButton) {
