@@ -129,11 +129,55 @@
             <div class="inventory-header">
                 <h2 data-i18n="currentInventory">Current Inventory</h2>
                 <div class="search-filter">
-                    <input type="text" id="searchInput" data-i18n-placeholder="searchPlaceholder">
+                    <input type="text" id="searchInput" data-i18n-placeholder="searchPlaceholder" aria-label="Search perfumes by name, brand, batch code, notes">
+                    <button id="filterToggle" class="btn btn-secondary" data-i18n="filters">🔍 Filters</button>
                     <button id="exportBtn" class="btn btn-secondary" data-i18n="exportToCSV">Export to CSV</button>
                     <button id="backupBtn" class="btn btn-backup" data-i18n="backup">💾 Backup</button>
                     <button id="restoreBtn" class="btn btn-restore" data-i18n="restore">📁 Restore</button>
                     <input type="file" id="restoreFile" accept=".json" style="display: none;">
+                </div>
+                <div class="bulk-actions" style="display: none;">
+                    <button id="selectAll" class="btn btn-secondary">Select All</button>
+                    <button id="bulkDelete" class="btn btn-danger" data-i18n="bulkDelete">Bulk Delete</button>
+                    <button id="bulkStatus" class="btn btn-secondary" data-i18n="bulkStatus">Change Status</button>
+                </div>
+            </div>
+
+            <div id="advancedFilters" class="advanced-filters collapsed">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="filterBrand" data-i18n="brand">Brand:</label>
+                        <select id="filterBrand">
+                            <option value="" data-i18n="allBrands">All Brands</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterConcentration" data-i18n="concentration">Concentration:</label>
+                        <select id="filterConcentration">
+                            <option value="" data-i18n="allConcentrations">All Concentrations</option>
+                            <option value="edp" data-i18n="concentrationEDP">Eau de Parfum (EDP)</option>
+                            <option value="edt" data-i18n="concentrationEDT">Eau de Toilette (EDT)</option>
+                            <option value="parfum" data-i18n="concentrationParfum">Parfum / Extrait</option>
+                            <option value="edc" data-i18n="concentrationEDC">Eau de Cologne (EDC)</option>
+                            <option value="edl" data-i18n="concentrationEDL">Eau de Légère</option>
+                            <option value="intense" data-i18n="concentrationIntense">Intense</option>
+                            <option value="elixir" data-i18n="concentrationElixir">Elixir</option>
+                            <option value="absolu" data-i18n="concentrationAbsolu">Absolu</option>
+                            <option value="other" data-i18n="concentrationOther">Other</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterDateFrom" data-i18n="productionDate">Date From:</label>
+                        <input type="month" id="filterDateFrom">
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterDateTo" data-i18n="productionDate">Date To:</label>
+                        <input type="month" id="filterDateTo">
+                    </div>
+                </div>
+                <div class="filter-actions">
+                    <button id="applyFilters" class="btn btn-primary" data-i18n="apply">Apply Filters</button>
+                    <button id="clearFilters" class="btn btn-secondary" data-i18n="clear">Clear Filters</button>
                 </div>
             </div>
             
@@ -193,7 +237,7 @@
         <button id="fabButton" class="fab" title="Quick add perfume" data-i18n="addNewPerfume">+</button>
 
         <!-- Bottom Sheet Modal for Editing -->
-        <div id="bottomSheet" class="bottom-sheet">
+        <div id="bottomSheet" class="bottom-sheet" tabindex="-1">
             <div class="bottom-sheet-handle"></div>
             <div class="bottom-sheet-content">
                 <h2 id="bottomSheetTitle" data-i18n="editPerfume">Edit Perfume</h2>
@@ -214,6 +258,11 @@
 
         <!-- Bottom Sheet Overlay -->
         <div id="bottomSheetOverlay" class="bottom-sheet-overlay"></div>
+    </div>
+
+    <div id="loading" class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Loading...</p>
     </div>
 
     <script src="app.js"></script>

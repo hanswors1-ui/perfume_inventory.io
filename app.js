@@ -64,7 +64,31 @@ const translations = {
         tableActions: "Actions",
         tableConcentration: "Type",
         deleteButton: "Delete",
-        editButton: "Edit"
+        editButton: "Edit",
+        undo: "Undo",
+        bulkDeleteConfirm: "Delete ${count} items?",
+        bulkDeleteSuccess: "${count} items deleted",
+        deleteItemConfirm: "Delete this item?",
+        bulkDelete: "Bulk Delete",
+        bulkStatus: "Change Status",
+        allBrands: "All Brands",
+        allConcentrations: "All Concentrations",
+        apply: "Apply Filters",
+        clear: "Clear Filters",
+        sortBy: "Sort by:",
+        sortByName: "Name (A-Z)",
+        sortByBrand: "Brand (A-Z)",
+        sortByDateAdded: "Date Added (Newest)",
+        sortByProductionDate: "Production Date (Newest)",
+        sortByStatus: "Status",
+        sortByConcentration: "Concentration",
+        sortBySize: "Size (Large to Small)",
+        sort: "↑",
+        editPerfume: "Edit Perfume",
+        editSize: "Edit Size",
+        editQuantity: "Edit Quantity",
+        editStatus: "Edit Status",
+        editNotes: "Edit Notes"
     },
     pl: {
         title: "🌸 System Inwentaryzacji Perfum",
@@ -128,7 +152,31 @@ const translations = {
         tableActions: "Akcje",
         tableConcentration: "Typ",
         deleteButton: "Usuń",
-        editButton: "Edytuj"
+        editButton: "Edytuj",
+        undo: "Cofnij",
+        bulkDeleteConfirm: "Usunąć ${count} pozycji?",
+        bulkDeleteSuccess: "Usunięto ${count} pozycji",
+        deleteItemConfirm: "Usunąć tę pozycję?",
+        bulkDelete: "Usuń Masowo",
+        bulkStatus: "Zmień Status",
+        allBrands: "Wszystkie Marki",
+        allConcentrations: "Wszystkie Koncentracje",
+        apply: "Zastosuj Filtry",
+        clear: "Wyczyść Filtry",
+        sortBy: "Sortuj według:",
+        sortByName: "Nazwa (A-Z)",
+        sortByBrand: "Marka (A-Z)",
+        sortByDateAdded: "Data Dodania (Najnowsze)",
+        sortByProductionDate: "Data Produkcji (Najnowsze)",
+        sortByStatus: "Status",
+        sortByConcentration: "Koncentracja",
+        sortBySize: "Rozmiar (Duże do Małych)",
+        sort: "↑",
+        editPerfume: "Edytuj Perfumy",
+        editSize: "Edytuj Rozmiar",
+        editQuantity: "Edytuj Ilość",
+        editStatus: "Edytuj Status",
+        editNotes: "Edytuj Notatki"
     }
 };
 
@@ -197,11 +245,40 @@ class PerfumeInventory {
         
         this.showAll = false;
         
+        // Cache for sorted lists
+        this.sortedCache = new Map();
+        
+        // Display limit for virtual scrolling
+        this.displayLimit = 50;
+        
+        // Advanced filters
+        this.advancedFilters = {
+            brand: '',
+            concentration: '',
+            dateFrom: '',
+            dateTo: ''
+        };
+        
         this.init();
+    }
+
+    debounce(func, delay) {
+        let timeout;
+        return (...args) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), delay);
+        };
+    }
+
+    populateFilterBrands() {
+        const brands = [...new Set(this.getCurrentList().map(p => p.brand))].sort();
+        const select = document.getElementById('filterBrand');
+        select.innerHTML = `<option value="">${translate('allBrands')}</option>` + brands.map(b => `<option value="${b}">${b}</option>`).join('');
     }
 
     async loadFromAPI() {
         try {
+            document.getElementById('loading').style.display = 'flex';
             console.log('Loading perfume catalog from API...');
             const response = await fetch('Perfumes_api/perfume.json');
             if (!response.ok) {
@@ -214,9 +291,11 @@ class PerfumeInventory {
             this.allKnownPerfumeNames = this.getAllKnownPerfumeNames();
             this.setupAutocomplete();
             console.log('Perfume catalog loaded successfully');
+            document.getElementById('loading').style.display = 'none';
             return data;
         } catch (error) {
             console.error('Failed to load perfume catalog from API:', error);
+            document.getElementById('loading').style.display = 'none';
             this.perfumeCatalog = [];
             return [];
         }
@@ -230,12 +309,22 @@ class PerfumeInventory {
         this.setupStatCardFilters();
         this.setupDarkMode();
         this.setupMobileUI();
+        this.setupAutocomplete();
         updatePageLanguage();
         
-        // Load perfumes from API after initialization
-        this.loadFromAPI().then(() => {
-            this.switchView(currentView);
-        });
+        // Register service worker for offline support
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then((registration) => {
+                    console.log('Service Worker registered with scope:', registration.scope);
+                })
+                .catch((error) => {
+                    console.log('Service Worker registration failed:', error);
+                });
+        }
+        
+        // Switch to current view without API data initially
+        this.switchView(currentView);
     }
 
     getCurrentList() {
@@ -370,49 +459,59 @@ class PerfumeInventory {
             
             if (!value) return;
             
-            // Get current brand and fresh perfume lists from inventory
-            const brand = document.getElementById('brand').value;
-            const freshKnownPerfumes = this.getKnownPerfumes();
-            const freshAllPerfumes = this.getAllKnownPerfumeNames();
-            const perfumesForBrand = freshKnownPerfumes[brand] || [];
-            
-            // If a brand is selected, only show perfumes from that brand
-            // Otherwise show all perfumes
-            const allSuggestions = brand && perfumesForBrand.length > 0 
-                ? perfumesForBrand 
-                : [...new Set([...perfumesForBrand, ...freshAllPerfumes])];
-            
-            // Filter and display suggestions
-            const filtered = allSuggestions.filter(item => 
-                item.toLowerCase().includes(value.toLowerCase())
-            ).slice(0, 10);
-            
-            filtered.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'autocomplete-item';
+            const performAutocomplete = () => {
+                // Get current brand and fresh perfume lists from inventory
+                const brand = document.getElementById('brand').value;
+                const freshKnownPerfumes = this.getKnownPerfumes();
+                const freshAllPerfumes = this.getAllKnownPerfumeNames();
+                const perfumesForBrand = freshKnownPerfumes[brand] || [];
                 
-                // Highlight matching part
-                const matchIndex = item.toLowerCase().indexOf(value.toLowerCase());
-                div.innerHTML = item.substring(0, matchIndex) +
-                               '<strong>' + item.substring(matchIndex, matchIndex + value.length) + '</strong>' +
-                               item.substring(matchIndex + value.length);
+                // If a brand is selected, only show perfumes from that brand
+                // Otherwise show all perfumes
+                const allSuggestions = brand && perfumesForBrand.length > 0 
+                    ? perfumesForBrand 
+                    : [...new Set([...perfumesForBrand, ...freshAllPerfumes])];
                 
-                div.addEventListener('click', () => {
-                    input.value = item;
-                    list.innerHTML = '';
-                    // When perfume is selected, auto-populate the brand if not already set
-                    const brandInput = document.getElementById('brand');
-                    if (brandInput && !brandInput.value) {
-                        // Find the brand for this perfume from the catalog
-                        const perfumeEntry = this.perfumeCatalog.find(p => p.name === item);
-                        if (perfumeEntry && perfumeEntry.brand) {
-                            brandInput.value = perfumeEntry.brand;
+                // Filter and display suggestions
+                const filtered = allSuggestions.filter(item => 
+                    item.toLowerCase().includes(value.toLowerCase())
+                ).slice(0, 10);
+                
+                filtered.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'autocomplete-item';
+                    
+                    // Highlight matching part
+                    const matchIndex = item.toLowerCase().indexOf(value.toLowerCase());
+                    div.innerHTML = item.substring(0, matchIndex) +
+                                   '<strong>' + item.substring(matchIndex, matchIndex + value.length) + '</strong>' +
+                                   item.substring(matchIndex + value.length);
+                    
+                    div.addEventListener('click', () => {
+                        input.value = item;
+                        list.innerHTML = '';
+                        // When perfume is selected, auto-populate the brand if not already set
+                        const brandInput = document.getElementById('brand');
+                        if (brandInput && !brandInput.value) {
+                            // Find the brand for this perfume from the catalog
+                            const perfumeEntry = this.perfumeCatalog.find(p => p.name === item);
+                            if (perfumeEntry && perfumeEntry.brand) {
+                                brandInput.value = perfumeEntry.brand;
+                            }
                         }
-                    }
+                    });
+                    
+                    list.appendChild(div);
                 });
-                
-                list.appendChild(div);
-            });
+            };
+            
+            if (!this.perfumeCatalog.length) {
+                this.loadFromAPI().then(() => {
+                    performAutocomplete();
+                });
+            } else {
+                performAutocomplete();
+            }
         });
         
         // Keyboard navigation
@@ -486,9 +585,10 @@ class PerfumeInventory {
             this.addPerfume();
         });
 
-        // Search functionality
+        // Search functionality with debouncing
+        this.debouncedSearch = this.debounce(this.searchInventory, 300);
         document.getElementById('searchInput').addEventListener('input', (e) => {
-            this.searchInventory(e.target.value);
+            this.debouncedSearch(e.target.value);
         });
 
         // Export functionality
@@ -543,6 +643,87 @@ class PerfumeInventory {
             
             e.target.value = value;
         });
+
+        // Advanced filters
+        document.getElementById('filterToggle').addEventListener('click', () => {
+            const filters = document.getElementById('advancedFilters');
+            filters.classList.toggle('collapsed');
+        });
+
+        document.getElementById('applyFilters').addEventListener('click', () => {
+            this.advancedFilters.brand = document.getElementById('filterBrand').value;
+            this.advancedFilters.concentration = document.getElementById('filterConcentration').value;
+            this.advancedFilters.dateFrom = document.getElementById('filterDateFrom').value;
+            this.advancedFilters.dateTo = document.getElementById('filterDateTo').value;
+            this.renderInventory();
+        });
+
+        document.getElementById('clearFilters').addEventListener('click', () => {
+            this.advancedFilters = { brand: '', concentration: '', dateFrom: '', dateTo: '' };
+            document.getElementById('filterBrand').value = '';
+            document.getElementById('filterConcentration').value = '';
+            document.getElementById('filterDateFrom').value = '';
+            document.getElementById('filterDateTo').value = '';
+            this.renderInventory();
+        });
+
+        // Bulk actions
+        document.addEventListener('change', (e) => {
+            if (e.target.classList.contains('item-checkbox')) {
+                this.updateBulkActions();
+            }
+        });
+
+        document.getElementById('selectAll').addEventListener('click', () => {
+            const all = document.querySelectorAll('.item-checkbox');
+            const checked = document.querySelectorAll('.item-checkbox:checked');
+            const select = checked.length === all.length;
+            all.forEach(cb => cb.checked = !select);
+            this.updateBulkActions();
+        });
+
+        document.getElementById('selectAllTable').addEventListener('change', (e) => {
+            document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = e.target.checked);
+            this.updateBulkActions();
+        });
+
+        document.getElementById('bulkDelete').addEventListener('click', () => {
+            const ids = Array.from(document.querySelectorAll('.item-checkbox:checked')).map(cb => parseInt(cb.dataset.id));
+            if (ids.length && confirm(translate('bulkDeleteConfirm').replace('${count}', ids.length))) {
+                ids.forEach(id => this.deletePerfume(id, false));
+                this.renderInventory();
+                this.updateStats();
+                this.showToast(translate('bulkDeleteSuccess').replace('${count}', ids.length));
+            }
+        });
+
+        document.getElementById('bulkStatus').addEventListener('click', () => {
+            const ids = Array.from(document.querySelectorAll('.item-checkbox:checked')).map(cb => parseInt(cb.dataset.id));
+            if (ids.length) {
+                const newStatus = prompt('Enter new status (owned, want-to-get, want-to-try, for-sale, sold):');
+                if (newStatus && ['owned', 'want-to-get', 'want-to-try', 'for-sale', 'sold'].includes(newStatus)) {
+                    ids.forEach(id => {
+                        const list = this.getCurrentList();
+                        const perfume = list.find(p => p.id === id);
+                        if (perfume) {
+                            perfume.status = newStatus;
+                        }
+                    });
+                    this.saveToLocalStorage();
+                    this.renderInventory();
+                    this.updateStats();
+                    this.showToast(`Status updated for ${ids.length} items`);
+                }
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'f') {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            }
+        });
     }
 
     updateFormFieldRequirements(status) {
@@ -586,6 +767,7 @@ class PerfumeInventory {
             sortBySelect.addEventListener('change', (e) => {
                 this.sortBy = e.target.value;
                 localStorage.setItem('sortBy', this.sortBy);
+                this.displayLimit = 50;
                 this.renderInventory();
             });
             // Set current value from this.sortBy
@@ -596,6 +778,7 @@ class PerfumeInventory {
             sortOrderBtn.addEventListener('click', () => {
                 this.sortReversed = !this.sortReversed;
                 localStorage.setItem('sortReversed', this.sortReversed);
+                this.displayLimit = 50;
                 // Update button visual state
                 if (this.sortReversed) {
                     sortOrderBtn.classList.add('reversed');
@@ -620,14 +803,18 @@ class PerfumeInventory {
             if (index === 0) {
                 // Total Items - show all perfumes
                 card.style.cursor = 'pointer';
-                card.addEventListener('click', () => {
+                card.setAttribute('role', 'button');
+                card.setAttribute('tabindex', '0');
+                const handler = () => {
                     this.showAll = true;
                     this.filterStatus = null;
                     localStorage.removeItem('filterStatus');
                     this.updateStatCardVisualState();
                     this.renderInventory();
                     this.updateStats();
-                });
+                };
+                card.addEventListener('click', handler);
+                card.addEventListener('touchstart', handler);
                 return;
             }
 
@@ -643,7 +830,9 @@ class PerfumeInventory {
             if (!status) return;
 
             card.style.cursor = 'pointer';
-            card.addEventListener('click', () => {
+            card.setAttribute('role', 'button');
+            card.setAttribute('tabindex', '0');
+            const handler = () => {
                 // Toggle filter: if clicking the same filter, clear it
                 if (this.filterStatus === status) {
                     this.filterStatus = null;
@@ -665,7 +854,9 @@ class PerfumeInventory {
                 
                 // Re-render inventory
                 this.renderInventory();
-            });
+            };
+            card.addEventListener('click', handler);
+            card.addEventListener('touchstart', handler);
         });
 
         // Set initial visual state
@@ -715,6 +906,7 @@ class PerfumeInventory {
         localStorage.setItem('currentView', view);
         
         this.showAll = false;
+        this.displayLimit = 50;
         
         // Update active button
         document.querySelectorAll('.view-btn').forEach(btn => {
@@ -837,9 +1029,17 @@ class PerfumeInventory {
         const difference = startX - endX;
         const perfumeId = parseInt(card.dataset.perfumeId);
 
-        // Swipe left - change status forward
+        // Swipe left - change status forward or delete if long
         if (difference > threshold) {
-            this.cycleStatus(perfumeId, 'forward');
+            if (difference > threshold * 2) {
+                // Long swipe left - delete
+                if (confirm(translate('deleteItemConfirm'))) {
+                    this.deletePerfume(perfumeId);
+                }
+            } else {
+                // Short swipe left - change status forward
+                this.cycleStatus(perfumeId, 'forward');
+            }
         }
         // Swipe right - change status backward
         else if (difference < -threshold) {
@@ -877,6 +1077,7 @@ class PerfumeInventory {
         if (bottomSheet && bottomSheetOverlay) {
             bottomSheet.classList.add('active');
             bottomSheetOverlay.classList.add('active');
+            bottomSheet.focus();
         }
     }
 
@@ -1113,22 +1314,36 @@ class PerfumeInventory {
         return classes[status] || 'status-owned';
     }
 
-    deletePerfume(id) {
-        if (confirm('Are you sure you want to delete this item from inventory?')) {
-            if (currentView === 'bottles') {
-                this.perfumes = this.perfumes.filter(p => p.id !== id);
-            } else {
-                this.decants = this.decants.filter(p => p.id !== id);
-            }
-            this.saveToLocalStorage();
-            
-            // Update autocomplete lists after deletion
-            this.knownPerfumes = this.getKnownPerfumes();
-            this.allKnownPerfumeNames = this.getAllKnownPerfumeNames();
-            
-            this.renderInventory();
-            this.updateStats();
-            this.showToast('Item deleted successfully!');
+    deletePerfume(id, showToast = true) {
+        const currentList = this.getCurrentList();
+        const deletedItem = currentList.find(p => p.id === id);
+        if (!deletedItem) return;
+
+        if (currentView === 'bottles') {
+            this.perfumes = this.perfumes.filter(p => p.id !== id);
+        } else {
+            this.decants = this.decants.filter(p => p.id !== id);
+        }
+        this.saveToLocalStorage();
+        
+        // Update autocomplete lists after deletion
+        this.knownPerfumes = this.getKnownPerfumes();
+        this.allKnownPerfumeNames = this.getAllKnownPerfumeNames();
+        
+        this.renderInventory();
+        this.updateStats();
+        if (showToast) {
+            this.showToast('Item deleted successfully!', () => {
+                // Undo
+                if (currentView === 'bottles') {
+                    this.perfumes.push(deletedItem);
+                } else {
+                    this.decants.push(deletedItem);
+                }
+                this.saveToLocalStorage();
+                this.renderInventory();
+                this.updateStats();
+            });
         }
     }
 
@@ -1146,10 +1361,15 @@ class PerfumeInventory {
             return perfumesArray;
         }
 
-        const sortedArray = [...perfumesArray]; // Create a copy to avoid mutations
-
         const sortField = this.sortBy || 'name';
         const isReversed = this.sortReversed || false;
+        const key = sortField + '-' + isReversed + '-' + perfumesArray.length + '-' + perfumesArray.map(p => p.id).sort().join(',');
+
+        if (this.sortedCache.has(key)) {
+            return this.sortedCache.get(key);
+        }
+
+        const sortedArray = [...perfumesArray]; // Create a copy to avoid mutations
 
         sortedArray.sort((a, b) => {
             let compareA, compareB;
@@ -1197,6 +1417,7 @@ class PerfumeInventory {
             return 0;
         });
 
+        this.sortedCache.set(key, sortedArray);
         return sortedArray;
     }
 
@@ -1210,13 +1431,30 @@ class PerfumeInventory {
             perfumesToRender = perfumesToRender.filter(p => p.status === this.filterStatus);
         }
         
+        // Apply advanced filters
+        if (this.advancedFilters.brand) {
+            perfumesToRender = perfumesToRender.filter(p => p.brand.toLowerCase().includes(this.advancedFilters.brand.toLowerCase()));
+        }
+        if (this.advancedFilters.concentration) {
+            perfumesToRender = perfumesToRender.filter(p => p.concentration === this.advancedFilters.concentration);
+        }
+        if (this.advancedFilters.dateFrom) {
+            const from = new Date(this.advancedFilters.dateFrom + '-01');
+            perfumesToRender = perfumesToRender.filter(p => p.productionDate && new Date(p.productionDate) >= from);
+        }
+        if (this.advancedFilters.dateTo) {
+            const to = new Date(this.advancedFilters.dateTo + '-01');
+            to.setMonth(to.getMonth() + 1);
+            perfumesToRender = perfumesToRender.filter(p => p.productionDate && new Date(p.productionDate) < to);
+        }
+        
         // Apply sorting if displaying full inventory
         if (perfumesToRender === this.getCurrentList()) {
             perfumesToRender = this.sortPerfumes(perfumesToRender);
         }
         
-        // Check if mobile viewport (less than 768px)
-        const isMobileView = window.innerWidth < 768;
+        // Check if mobile/tablet viewport (less than 1024px)
+        const isMobileView = window.innerWidth < 1024;
         
         // Render cards on mobile, table on desktop
         if (isMobileView) {
@@ -1236,13 +1474,17 @@ class PerfumeInventory {
             return;
         }
 
+        const toRender = perfumesToRender.slice(0, this.displayLimit);
+        const hasMore = perfumesToRender.length > this.displayLimit;
+
         const cardsHTML = `
-            <div class="inventory-cards">
-                ${perfumesToRender.map(perfume => {
+            <div class="inventory-cards" role="list">
+                ${toRender.map(perfume => {
                     const status = perfume.status || 'owned';
                     return `
-                    <div class="perfume-card" data-perfumeId="${perfume.id}">
+                    <div class="perfume-card" data-perfumeId="${perfume.id}" role="listitem">
                         <div class="perfume-card-header">
+                            <input type="checkbox" class="item-checkbox" data-id="${perfume.id}">
                             <div>
                                 <div class="perfume-card-name">${perfume.name}</div>
                                 <div class="perfume-card-brand">${perfume.brand}</div>
@@ -1268,16 +1510,31 @@ class PerfumeInventory {
                             </div>
                         </div>
                         <div class="perfume-card-actions">
-                            <button onclick="inventory.editPerfume(${perfume.id})" class="edit-btn" data-i18n="edit">${translate('editButton')}</button>
-                            <button onclick="inventory.deletePerfume(${perfume.id})" class="delete-btn" data-i18n="delete">${translate('deleteButton')}</button>
+                            <button onclick="inventory.editPerfume(${perfume.id})" class="edit-btn" data-i18n="edit" aria-label="Edit ${perfume.name}">${translate('editButton')}</button>
+                            <button onclick="inventory.deletePerfume(${perfume.id})" class="delete-btn" data-i18n="delete" aria-label="Delete ${perfume.name}">${translate('deleteButton')}</button>
                         </div>
                     </div>
                     `;
                 }).join('')}
+                ${hasMore ? `<div class="load-more-container"><button class="btn btn-primary load-more-btn" onclick="inventory.loadMore()">Load More</button></div>` : ''}
             </div>
         `;
         
         container.innerHTML = cardsHTML;
+    }
+
+    updateBulkActions() {
+        const checked = document.querySelectorAll('.item-checkbox:checked');
+        const bulk = document.querySelector('.bulk-actions');
+        bulk.style.display = checked.length > 0 ? 'flex' : 'none';
+        const selectAllBtn = document.getElementById('selectAll');
+        const all = document.querySelectorAll('.item-checkbox');
+        selectAllBtn.textContent = checked.length === all.length ? 'Deselect All' : 'Select All';
+    }
+
+    loadMore() {
+        this.displayLimit += 50;
+        this.renderInventory();
     }
 
     renderInventoryTable(perfumesToRender) {
@@ -1289,11 +1546,15 @@ class PerfumeInventory {
             return;
         }
 
+        const toRender = perfumesToRender.slice(0, this.displayLimit);
+        const hasMore = perfumesToRender.length > this.displayLimit;
+
         const table = `
             <div class="inventory-table">
                 <table>
                     <thead>
                         <tr>
+                            <th><input type="checkbox" id="selectAllTable"></th>
                             <th>${translate('tableName')}</th>
                             <th>${translate('tableBrand')}</th>
                             <th>${translate('tableConcentration')}</th>
@@ -1308,10 +1569,11 @@ class PerfumeInventory {
                         </tr>
                     </thead>
                     <tbody>
-                        ${perfumesToRender.map(perfume => {
+                        ${toRender.map(perfume => {
                             const status = perfume.status || 'owned';
                             return `
                             <tr class="${this.getStatusClass(status)}">
+                                <td><input type="checkbox" class="item-checkbox" data-id="${perfume.id}"></td>
                                 <td><strong>${perfume.name}</strong></td>
                                 <td>${perfume.brand}</td>
                                 <td class="editable-cell" onclick="inventory.editConcentration(${perfume.id}, this)">
@@ -1352,7 +1614,7 @@ class PerfumeInventory {
                                 </td>
                                 <td>${perfume.notes || '-'}</td>
                                 <td>
-                                    <button class="btn btn-delete" onclick="inventory.deletePerfume(${perfume.id})">
+                                    <button class="btn btn-delete" onclick="inventory.deletePerfume(${perfume.id})" aria-label="Delete ${perfume.name}">
                                         ${translate('deleteButton')}
                                     </button>
                                 </td>
@@ -1360,6 +1622,7 @@ class PerfumeInventory {
                         `}).join('')}
                     </tbody>
                 </table>
+                ${hasMore ? `<div class="load-more-container"><button class="btn btn-primary load-more-btn" onclick="inventory.loadMore()">Load More</button></div>` : ''}
             </div>
         `;
 
@@ -1367,6 +1630,7 @@ class PerfumeInventory {
     }
 
     searchInventory(query) {
+        this.displayLimit = 50;
         const currentList = this.getCurrentList();
         const filtered = currentList.filter(perfume => {
             const searchTerm = query.toLowerCase();
@@ -1374,7 +1638,9 @@ class PerfumeInventory {
                 perfume.name.toLowerCase().includes(searchTerm) ||
                 perfume.brand.toLowerCase().includes(searchTerm) ||
                 perfume.batchCode.toLowerCase().includes(searchTerm) ||
-                perfume.productionDate.includes(searchTerm)
+                perfume.productionDate.includes(searchTerm) ||
+                (perfume.fragranceNotes && perfume.fragranceNotes.toLowerCase().includes(searchTerm)) ||
+                (perfume.notes && perfume.notes.toLowerCase().includes(searchTerm))
             );
         });
         this.renderInventory(filtered);
@@ -1411,6 +1677,8 @@ class PerfumeInventory {
         document.getElementById('wantToTryCount').textContent = statusCounts['want-to-try'] || 0;
         document.getElementById('forSaleCount').textContent = statusCounts['for-sale'] || 0;
         document.getElementById('soldCount').textContent = statusCounts['sold'] || 0;
+
+        this.populateFilterBrands();
     }
 
     checkBatchCode() {
@@ -1743,15 +2011,28 @@ class PerfumeInventory {
         document.getElementById('perfumeForm').reset();
     }
 
-    showToast(message) {
+    showToast(message, undoCallback = null) {
         const toast = document.createElement('div');
         toast.className = 'toast';
-        toast.textContent = message;
+        toast.setAttribute('aria-live', 'assertive');
+        toast.innerHTML = `
+            <span>${message}</span>
+            <button class="toast-close">&times;</button>
+            ${undoCallback ? `<button class="toast-undo">${translate('undo')}</button>` : ''}
+        `;
         document.body.appendChild(toast);
 
-        setTimeout(() => {
-            toast.remove();
-        }, 3000);
+        const removeToast = () => toast.remove();
+
+        toast.querySelector('.toast-close').addEventListener('click', removeToast);
+        if (undoCallback) {
+            toast.querySelector('.toast-undo').addEventListener('click', () => {
+                undoCallback();
+                removeToast();
+            });
+        }
+
+        setTimeout(removeToast, 5000);
     }
 
     saveToLocalStorage() {
