@@ -1033,6 +1033,8 @@ class PerfumeInventory {
         const bottomSheetOverlay = document.getElementById('bottomSheetOverlay');
         const bottomSheetClose = document.getElementById('bottomSheetClose');
         
+        // Store current perfume being edited
+        this.currentEditingPerfume = null;
 
         // FAB click handler - scroll to top and focus form
         if (fabButton) {
@@ -1052,6 +1054,56 @@ class PerfumeInventory {
         if (bottomSheetOverlay) {
             bottomSheetOverlay.addEventListener('click', () => {
                 this.closeBottomSheet();
+            });
+        }
+
+        // Edit buttons in the bottom sheet
+        const editSizeBtn = document.getElementById('editSizeBtn');
+        const editQuantityBtn = document.getElementById('editQuantityBtn');
+        const editStatusBtn = document.getElementById('editStatusBtn');
+        const editNotesBtn = document.getElementById('editNotesBtn');
+
+        if (editSizeBtn) {
+            editSizeBtn.addEventListener('click', () => {
+                if (this.currentEditingPerfume) {
+                    const cell = { innerHTML: '', appendChild: (el) => this.currentEditingPerfume._editCell = el };
+                    this.editSize(this.currentEditingPerfume.id, cell);
+                }
+            });
+        }
+
+        if (editQuantityBtn) {
+            editQuantityBtn.addEventListener('click', () => {
+                if (this.currentEditingPerfume) {
+                    const cell = { innerHTML: '', appendChild: (el) => this.currentEditingPerfume._editCell = el };
+                    this.editQuantity(this.currentEditingPerfume.id, cell);
+                }
+            });
+        }
+
+        if (editStatusBtn) {
+            editStatusBtn.addEventListener('click', () => {
+                if (this.currentEditingPerfume) {
+                    const newStatus = prompt('Enter new status (owned, want-to-get, want-to-try, for-sale, sold):');
+                    if (newStatus && ['owned', 'want-to-get', 'want-to-try', 'for-sale', 'sold'].includes(newStatus)) {
+                        this.updateStatus(this.currentEditingPerfume.id, newStatus);
+                        this.closeBottomSheet();
+                    }
+                }
+            });
+        }
+
+        if (editNotesBtn) {
+            editNotesBtn.addEventListener('click', () => {
+                if (this.currentEditingPerfume) {
+                    const newNotes = prompt('Enter personal notes:', this.currentEditingPerfume.notes || '');
+                    if (newNotes !== null) {
+                        this.currentEditingPerfume.notes = newNotes;
+                        this.saveToLocalStorage();
+                        this.showToast('Notes updated');
+                        this.closeBottomSheet();
+                    }
+                }
             });
         }
 
@@ -1128,6 +1180,11 @@ class PerfumeInventory {
     openBottomSheet(perfume = null) {
         const bottomSheet = document.getElementById('bottomSheet');
         const bottomSheetOverlay = document.getElementById('bottomSheetOverlay');
+        
+        // Store the perfume being edited
+        if (perfume) {
+            this.currentEditingPerfume = perfume;
+        }
 
         if (bottomSheet && bottomSheetOverlay) {
             bottomSheet.classList.add('active');
