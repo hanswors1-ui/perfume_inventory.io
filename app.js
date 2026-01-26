@@ -179,6 +179,8 @@ const translations = {
         editStatus: "Edytuj Status",
         editNotes: "Edytuj Notatki"
     }
+};
+
 // Make translations available globally for extensions
 window['translations'] = translations;
 window['currentLanguage'] = currentLanguage;
