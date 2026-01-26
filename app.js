@@ -1565,13 +1565,13 @@ class PerfumeInventory {
                             </div>
                         </div>
                         <div class="perfume-card-actions">
-                            <button onclick="inventory.editPerfume(${perfume.id})" class="edit-btn" data-i18n="edit" aria-label="Edit ${perfume.name}">${translate('editButton')}</button>
-                            <button onclick="inventory.deletePerfume(${perfume.id})" class="delete-btn" data-i18n="delete" aria-label="Delete ${perfume.name}">${translate('deleteButton')}</button>
+                            <button onclick="window.inventory.editPerfume(${perfume.id})" class="edit-btn" data-i18n="edit" aria-label="Edit ${perfume.name}">${translate('editButton')}</button>
+                            <button onclick="window.inventory.deletePerfume(${perfume.id})" class="delete-btn" data-i18n="delete" aria-label="Delete ${perfume.name}">${translate('deleteButton')}</button>
                         </div>
                     </div>
                     `;
                 }).join('')}
-                ${hasMore ? `<div class="load-more-container"><button class="btn btn-primary load-more-btn" onclick="inventory.loadMore()">Load More</button></div>` : ''}
+                ${hasMore ? `<div class="load-more-container"><button class="btn btn-primary load-more-btn" onclick="window.inventory.loadMore()">Load More</button></div>` : ''}
             </div>
         `;
         
