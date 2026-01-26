@@ -599,40 +599,60 @@ class PerfumeInventory {
 
     setupEventListeners() {
         // Form submission
-        document.getElementById('perfumeForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.addPerfume();
-        });
+        const perfumeForm = document.getElementById('perfumeForm');
+        if (perfumeForm) {
+            perfumeForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.addPerfume();
+            });
+        }
 
         // Search functionality with debouncing
         this.debouncedSearch = this.debounce(this.searchInventory, 300);
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            this.debouncedSearch(e.target.value);
-        });
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                this.debouncedSearch(e.target.value);
+            });
+        }
 
         // Export functionality
-        document.getElementById('exportBtn').addEventListener('click', () => {
-            this.exportToCSV();
-        });
+        const exportBtn = document.getElementById('exportBtn');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', () => {
+                this.exportToCSV();
+            });
+        }
 
         // Backup functionality
-        document.getElementById('backupBtn').addEventListener('click', () => {
-            this.backupInventory();
-        });
+        const backupBtn = document.getElementById('backupBtn');
+        if (backupBtn) {
+            backupBtn.addEventListener('click', () => {
+                this.backupInventory();
+            });
+        }
 
         // Restore functionality
-        document.getElementById('restoreBtn').addEventListener('click', () => {
-            document.getElementById('restoreFile').click();
-        });
-
-        document.getElementById('restoreFile').addEventListener('change', (e) => {
-            this.restoreInventory(e.target.files[0]);
-        });
+        const restoreBtn = document.getElementById('restoreBtn');
+        if (restoreBtn) {
+            restoreBtn.addEventListener('click', () => {
+                document.getElementById('restoreFile').click();
+            });
+        }
+        const restoreFile = document.getElementById('restoreFile');
+        if (restoreFile) {
+            restoreFile.addEventListener('change', (e) => {
+                this.restoreInventory(e.target.files[0]);
+            });
+        }
 
         // Check batch code on CheckFresh
-        document.getElementById('checkBatchBtn').addEventListener('click', () => {
-            this.checkBatchCode();
-        });
+        const checkBatchBtn = document.getElementById('checkBatchBtn');
+        if (checkBatchBtn) {
+            checkBatchBtn.addEventListener('click', () => {
+                this.checkBatchCode();
+            });
+        }
 
         // Close autocomplete when clicking outside
         document.addEventListener('click', (e) => {
@@ -642,49 +662,59 @@ class PerfumeInventory {
         });
 
         // Handle status change to make quantity/size optional for wishlist items
-        document.getElementById('status').addEventListener('change', (e) => {
-            this.updateFormFieldRequirements(e.target.value);
-        });
+        const status = document.getElementById('status');
+        if (status) {
+            status.addEventListener('change', (e) => {
+                this.updateFormFieldRequirements(e.target.value);
+            });
+        }
 
         // Format production date input for YYYY-MM
-        document.getElementById('productionDate').addEventListener('input', (e) => {
-            let value = e.target.value.replace(/[^\d-]/g, ''); // Only digits and dash
-            
-            // Auto-insert dash after year
-            if (value.length === 4 && !value.includes('-')) {
-                value = value + '-';
-            }
-            
-            // Limit to YYYY-MM format
-            if (value.length > 7) {
-                value = value.substring(0, 7);
-            }
-            
-            e.target.value = value;
-        });
+        const productionDate = document.getElementById('productionDate');
+        if (productionDate) {
+            productionDate.addEventListener('input', (e) => {
+                let value = e.target.value.replace(/[^\d-]/g, ''); // Only digits and dash
+                // Auto-insert dash after year
+                if (value.length === 4 && !value.includes('-')) {
+                    value = value + '-';
+                }
+                // Limit to YYYY-MM format
+                if (value.length > 7) {
+                    value = value.substring(0, 7);
+                }
+                e.target.value = value;
+            });
+        }
 
         // Advanced filters
-        document.getElementById('filterToggle').addEventListener('click', () => {
-            const filters = document.getElementById('advancedFilters');
-            filters.classList.toggle('collapsed');
-        });
-
-        document.getElementById('applyFilters').addEventListener('click', () => {
-            this.advancedFilters.brand = document.getElementById('filterBrand').value;
-            this.advancedFilters.concentration = document.getElementById('filterConcentration').value;
-            this.advancedFilters.dateFrom = document.getElementById('filterDateFrom').value;
-            this.advancedFilters.dateTo = document.getElementById('filterDateTo').value;
-            this.renderInventory();
-        });
-
-        document.getElementById('clearFilters').addEventListener('click', () => {
-            this.advancedFilters = { brand: '', concentration: '', dateFrom: '', dateTo: '' };
-            document.getElementById('filterBrand').value = '';
-            document.getElementById('filterConcentration').value = '';
-            document.getElementById('filterDateFrom').value = '';
-            document.getElementById('filterDateTo').value = '';
-            this.renderInventory();
-        });
+        const filterToggle = document.getElementById('filterToggle');
+        if (filterToggle) {
+            filterToggle.addEventListener('click', () => {
+                const filters = document.getElementById('advancedFilters');
+                filters.classList.toggle('collapsed');
+            });
+        }
+        const applyFilters = document.getElementById('applyFilters');
+        if (applyFilters) {
+            applyFilters.addEventListener('click', () => {
+                this.advancedFilters.brand = document.getElementById('filterBrand').value;
+                this.advancedFilters.concentration = document.getElementById('filterConcentration').value;
+                this.advancedFilters.dateFrom = document.getElementById('filterDateFrom').value;
+                this.advancedFilters.dateTo = document.getElementById('filterDateTo').value;
+                this.renderInventory();
+            });
+        }
+        const clearFilters = document.getElementById('clearFilters');
+        if (clearFilters) {
+            clearFilters.addEventListener('click', () => {
+                this.advancedFilters = { brand: '', concentration: '', dateFrom: '', dateTo: '' };
+                document.getElementById('filterBrand').value = '';
+                document.getElementById('filterConcentration').value = '';
+                document.getElementById('filterDateFrom').value = '';
+                document.getElementById('filterDateTo').value = '';
+                this.renderInventory();
+            });
+        }
 
         // Bulk actions
         document.addEventListener('change', (e) => {
@@ -692,44 +722,50 @@ class PerfumeInventory {
                 this.updateBulkActions();
             }
         });
-
-        document.getElementById('selectAll').addEventListener('click', () => {
-            const all = document.querySelectorAll('.item-checkbox');
-            const checked = document.querySelectorAll('.item-checkbox:checked');
-            const select = checked.length === all.length;
-            all.forEach(cb => cb.checked = !select);
-            this.updateBulkActions();
-        });
-
-        document.getElementById('bulkDelete').addEventListener('click', () => {
-            const ids = Array.from(document.querySelectorAll('.item-checkbox:checked')).map(cb => parseInt(cb.dataset.id));
-            if (ids.length && confirm(translate('bulkDeleteConfirm').replace('${count}', ids.length))) {
-                ids.forEach(id => this.deletePerfume(id, false));
-                this.renderInventory();
-                this.updateStats();
-                this.showToast(translate('bulkDeleteSuccess').replace('${count}', ids.length));
-            }
-        });
-
-        document.getElementById('bulkStatus').addEventListener('click', () => {
-            const ids = Array.from(document.querySelectorAll('.item-checkbox:checked')).map(cb => parseInt(cb.dataset.id));
-            if (ids.length) {
-                const newStatus = prompt('Enter new status (owned, want-to-get, want-to-try, for-sale, sold):');
-                if (newStatus && ['owned', 'want-to-get', 'want-to-try', 'for-sale', 'sold'].includes(newStatus)) {
-                    ids.forEach(id => {
-                        const list = this.getCurrentList();
-                        const perfume = list.find(p => p.id === id);
-                        if (perfume) {
-                            perfume.status = newStatus;
-                        }
-                    });
-                    this.saveToLocalStorage();
+        const selectAll = document.getElementById('selectAll');
+        if (selectAll) {
+            selectAll.addEventListener('click', () => {
+                const all = document.querySelectorAll('.item-checkbox');
+                const checked = document.querySelectorAll('.item-checkbox:checked');
+                const select = checked.length === all.length;
+                all.forEach(cb => cb.checked = !select);
+                this.updateBulkActions();
+            });
+        }
+        const bulkDelete = document.getElementById('bulkDelete');
+        if (bulkDelete) {
+            bulkDelete.addEventListener('click', () => {
+                const ids = Array.from(document.querySelectorAll('.item-checkbox:checked')).map(cb => parseInt(cb.dataset.id));
+                if (ids.length && confirm(translate('bulkDeleteConfirm').replace('${count}', ids.length))) {
+                    ids.forEach(id => this.deletePerfume(id, false));
                     this.renderInventory();
                     this.updateStats();
-                    this.showToast(`Status updated for ${ids.length} items`);
+                    this.showToast(translate('bulkDeleteSuccess').replace('${count}', ids.length));
                 }
-            }
-        });
+            });
+        }
+        const bulkStatus = document.getElementById('bulkStatus');
+        if (bulkStatus) {
+            bulkStatus.addEventListener('click', () => {
+                const ids = Array.from(document.querySelectorAll('.item-checkbox:checked')).map(cb => parseInt(cb.dataset.id));
+                if (ids.length) {
+                    const newStatus = prompt('Enter new status (owned, want-to-get, want-to-try, for-sale, sold):');
+                    if (newStatus && ['owned', 'want-to-get', 'want-to-try', 'for-sale', 'sold'].includes(newStatus)) {
+                        ids.forEach(id => {
+                            const list = this.getCurrentList();
+                            const perfume = list.find(p => p.id === id);
+                            if (perfume) {
+                                perfume.status = newStatus;
+                            }
+                        });
+                        this.saveToLocalStorage();
+                        this.renderInventory();
+                        this.updateStats();
+                        this.showToast(`Status updated for ${ids.length} items`);
+                    }
+                }
+            });
+        }
 
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
