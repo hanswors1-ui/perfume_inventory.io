@@ -2226,8 +2226,8 @@ class PerfumeInventory {
 // Initialize the inventory system when DOM is ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-        const inventory = new PerfumeInventory();
+        window.inventory = new PerfumeInventory();
     });
 } else {
-    const inventory = new PerfumeInventory();
+    window.inventory = new PerfumeInventory();
 }
