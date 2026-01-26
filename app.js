@@ -1,6 +1,7 @@
 // Perfume Inventory Management System
 
 // Translation System
+let currentLanguage = localStorage.getItem('preferredLanguage') || 'en';
 const translations = {
     en: {
         title: "🌸 Perfume Inventory System",
@@ -177,10 +178,10 @@ const translations = {
         editQuantity: "Edytuj Ilość",
         editStatus: "Edytuj Status",
         editNotes: "Edytuj Notatki"
+    }
 // Make translations available globally for extensions
-window.translations = translations;
-window.currentLanguage = currentLanguage;
-window.translate = translate;
+window['translations'] = translations;
+window['currentLanguage'] = currentLanguage;
 
 // Ensure currentLanguage is valid
 if (!translations[currentLanguage]) {
@@ -191,6 +192,8 @@ if (!translations[currentLanguage]) {
 function translate(key) {
     return translations[currentLanguage][key] || translations.en[key] || key;
 }
+
+window['translate'] = translate;
 
 function updatePageLanguage() {
     // Update all elements with data-i18n attribute
