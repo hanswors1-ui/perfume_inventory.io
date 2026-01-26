@@ -1107,6 +1107,33 @@ class PerfumeInventory {
             });
         }
 
+        // Save button handler
+        const bottomSheetSave = document.getElementById('bottomSheetSave');
+        if (bottomSheetSave) {
+            bottomSheetSave.addEventListener('click', () => {
+                if (this.currentEditingPerfume) {
+                    // Get values from the form
+                    const qtyInput = document.getElementById('editQtyInput');
+                    const sizeInput = document.getElementById('editSizeInput');
+                    const statusSelect = document.getElementById('editStatusSelect');
+                    const notesInput = document.getElementById('editNotesInput');
+
+                    // Update perfume data
+                    if (qtyInput) this.currentEditingPerfume.quantity = parseInt(qtyInput.value) || 0;
+                    if (sizeInput) this.currentEditingPerfume.size = parseFloat(sizeInput.value) || 0;
+                    if (statusSelect) this.currentEditingPerfume.status = statusSelect.value;
+                    if (notesInput) this.currentEditingPerfume.notes = notesInput.value;
+
+                    // Save to storage and refresh
+                    this.saveToLocalStorage();
+                    this.renderInventory();
+                    this.updateStats();
+                    this.showToast('Changes saved');
+                    this.closeBottomSheet();
+                }
+            });
+        }
+
         // Swipe detection for status changes
         this.setupSwipeGestures();
     }
@@ -1180,10 +1207,49 @@ class PerfumeInventory {
     openBottomSheet(perfume = null) {
         const bottomSheet = document.getElementById('bottomSheet');
         const bottomSheetOverlay = document.getElementById('bottomSheetOverlay');
+        const bottomSheetBody = document.getElementById('bottomSheetBody');
         
         // Store the perfume being edited
         if (perfume) {
             this.currentEditingPerfume = perfume;
+            
+            // Populate the bottom sheet with perfume details
+            if (bottomSheetBody) {
+                bottomSheetBody.innerHTML = `
+                    <div class="edit-form">
+                        <div class="form-group">
+                            <label>Brand:</label>
+                            <input type="text" id="editBrand" value="${perfume.brand || ''}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Name:</label>
+                            <input type="text" id="editName" value="${perfume.name || ''}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>${translate('quantity')}:</label>
+                            <input type="number" id="editQtyInput" value="${perfume.quantity || 0}" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>${translate('size')}:</label>
+                            <input type="number" id="editSizeInput" value="${perfume.size || 0}" step="0.1" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>${translate('status')}:</label>
+                            <select id="editStatusSelect">
+                                <option value="owned" ${perfume.status === 'owned' ? 'selected' : ''}>Owned</option>
+                                <option value="want-to-get" ${perfume.status === 'want-to-get' ? 'selected' : ''}>Want to Get</option>
+                                <option value="want-to-try" ${perfume.status === 'want-to-try' ? 'selected' : ''}>Want to Try</option>
+                                <option value="for-sale" ${perfume.status === 'for-sale' ? 'selected' : ''}>For Sale</option>
+                                <option value="sold" ${perfume.status === 'sold' ? 'selected' : ''}>Sold</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>${translate('personalNotes')}:</label>
+                            <textarea id="editNotesInput" placeholder="Your notes...">${perfume.notes || ''}</textarea>
+                        </div>
+                    </div>
+                `;
+            }
         }
 
         if (bottomSheet && bottomSheetOverlay) {
