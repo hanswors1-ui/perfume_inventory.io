@@ -312,6 +312,9 @@ class PerfumeInventory {
         this.setupAutocomplete();
         updatePageLanguage();
         
+        // Load perfume catalog in background for autocomplete
+        this.loadFromAPI();
+        
         // Register service worker for offline support
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js')
@@ -409,36 +412,46 @@ class PerfumeInventory {
             
             if (!value) return;
             
-            // Filter and display suggestions - always get fresh brand list from inventory
-            const freshBrands = this.getKnownBrands();
-            const filtered = freshBrands.filter(item => 
-                item.toLowerCase().includes(value.toLowerCase())
-            ).slice(0, 10);
-            
-            filtered.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'autocomplete-item';
+            const performAutocomplete = () => {
+                // Filter and display suggestions - always get fresh brand list from inventory
+                const freshBrands = this.getKnownBrands();
+                const filtered = freshBrands.filter(item => 
+                    item.toLowerCase().includes(value.toLowerCase())
+                ).slice(0, 10);
                 
-                // Highlight matching part
-                const matchIndex = item.toLowerCase().indexOf(value.toLowerCase());
-                div.innerHTML = item.substring(0, matchIndex) +
-                               '<strong>' + item.substring(matchIndex, matchIndex + value.length) + '</strong>' +
-                               item.substring(matchIndex + value.length);
-                
-                div.addEventListener('click', () => {
-                    input.value = item;
-                    list.innerHTML = '';
-                    // When brand is selected, trigger input on perfume field to show filtered suggestions
-                    const perfumeInput = document.getElementById('perfumeName');
-                    if (perfumeInput) {
-                        perfumeInput.focus();
-                        // Trigger input event to show perfume suggestions for this brand
-                        perfumeInput.dispatchEvent(new Event('input', { bubbles: true }));
-                    }
+                filtered.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'autocomplete-item';
+                    
+                    // Highlight matching part
+                    const matchIndex = item.toLowerCase().indexOf(value.toLowerCase());
+                    div.innerHTML = item.substring(0, matchIndex) +
+                                   '<strong>' + item.substring(matchIndex, matchIndex + value.length) + '</strong>' +
+                                   item.substring(matchIndex + value.length);
+                    
+                    div.addEventListener('click', () => {
+                        input.value = item;
+                        list.innerHTML = '';
+                        // When brand is selected, trigger input on perfume field to show filtered suggestions
+                        const perfumeInput = document.getElementById('perfumeName');
+                        if (perfumeInput) {
+                            perfumeInput.focus();
+                            // Trigger input event to show perfume suggestions for this brand
+                            perfumeInput.dispatchEvent(new Event('input', { bubbles: true }));
+                        }
+                    });
+                    
+                    list.appendChild(div);
                 });
-                
-                list.appendChild(div);
-            });
+            };
+            
+            if (!this.perfumeCatalog.length) {
+                this.loadFromAPI().then(() => {
+                    performAutocomplete();
+                });
+            } else {
+                performAutocomplete();
+            }
         });
         
         // Keyboard navigation
